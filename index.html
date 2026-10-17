@@ -25,6 +25,7 @@
     </a>
     <nav aria-label="Main">
       <a href="#projects" data-i18n="nav.projects">Projects</a>
+      <a href="#notes" data-i18n="nav.notes">Notes</a>
       <a href="#skills" data-i18n="nav.skills">Skills</a>
       <a href="#about" data-i18n="nav.about">About</a>
       <a href="#contact" data-i18n="nav.contact">Contact</a>
@@ -39,36 +40,58 @@
     <section class="hero">
       <div class="hero-art" aria-hidden="true">
         <img class="art a1" src="assets/aurora.jpg" width="1440" height="900" alt="">
-        <img class="art a2" src="assets/flowboard.png" width="1440" height="900" alt="">
+        <img class="art a2" src="assets/relay.png" width="1440" height="900" alt="">
         <img class="art a3" src="assets/void-pulse.jpg" width="1280" height="720" alt="">
       </div>
-      <p class="kicker reveal"><span class="dot" aria-hidden="true"></span><span data-i18n="hero.kicker">Frontend developer</span></p>
+      <p class="kicker reveal"><span class="dot" aria-hidden="true"></span><span data-i18n="hero.kicker">Frontend &amp; fullstack developer</span></p>
       <h1 class="reveal" data-i18n="hero.title">I build fast, interactive interfaces, from product apps to real-time graphics.</h1>
-      <p class="lead reveal" data-i18n="hero.lead">JavaScript, TypeScript, React and WebGL. Every project below is built from scratch, covered by tests and shipped with CI.</p>
+      <p class="lead reveal" data-i18n="hero.lead">TypeScript, React, Node.js, SQL and WebGL. Every project below is built from scratch, covered by tests and shipped with CI.</p>
       <div class="cta reveal">
         <a class="btn primary" href="#projects"><span data-i18n="hero.cta">See the work</span> <span aria-hidden="true">↓</span></a>
         <a class="btn" href="https://github.com/chop-prog" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .8.1-.7.4-1.1.6-1.3-2.2-.3-4.6-1.1-4.6-5a3.9 3.9 0 0 1 1-2.7 3.6 3.6 0 0 1 .1-2.6s.8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6a3.9 3.9 0 0 1 1 2.7c0 3.9-2.3 4.7-4.6 5 .4.3.7.9.7 1.9V21c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/></svg><span data-i18n="hero.github">GitHub profile</span></a>
       </div>
       <dl class="stats reveal">
-        <div><dt data-count="3">3</dt><dd data-i18n="stats.projects">shipped projects</dd></div>
-        <div><dt data-count="66">66</dt><dd data-i18n="stats.tests">automated tests</dd></div>
+        <div><dt data-count="4">4</dt><dd data-i18n="stats.projects">shipped projects</dd></div>
+        <div><dt data-count="111">111</dt><dd data-i18n="stats.tests">automated tests</dd></div>
         <div><dt data-count="0">0</dt><dd data-i18n="stats.deps">runtime dependencies in the game and the simulation</dd></div>
-        <div><dt data-count="3">3</dt><dd data-i18n="stats.langs">languages: JS, TS, GLSL</dd></div>
+        <div><dt data-count="4">4</dt><dd data-i18n="stats.langs">languages: TS, JS, SQL, GLSL</dd></div>
       </dl>
     </section>
 
     <section id="projects" class="section">
       <header class="section-head reveal">
         <h2 data-i18n="projects.title">Selected work</h2>
-        <p data-i18n="projects.lead">Three projects that each show a different side of frontend work.</p>
+        <p data-i18n="projects.lead">Four projects that each show a different side of the craft: backend, product UI, graphics, engine work.</p>
       </header>
+
+      <article class="project reveal" style="--accent:#ff8a5c">
+        <a class="shot" href="https://chop-prog.github.io/relay/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+          <img src="assets/relay.png" width="1440" height="900" alt="" loading="lazy" decoding="async">
+        </a>
+        <div class="info">
+          <p class="tag"><span>01</span> <span data-i18n="relay.tag">Fullstack · realtime</span></p>
+          <h3>Relay</h3>
+          <p data-i18n="relay.desc">Live Q&amp;A and polls for talks, in the spirit of Slido. The audience asks and upvotes questions, the host moderates and runs polls, and everything updates in real time.</p>
+          <ul>
+            <li data-i18n="relay.p1">Hono API on Node: SQLite with migrations and constraints, Zod validation, RFC 7807 errors</li>
+            <li data-i18n="relay.p2">Server-Sent Events with personalised snapshots and moderation-aware fan-out</li>
+            <li data-i18n="relay.p3">HMAC-signed sessions, rate limiting, Docker; 45 tests, including the SSE stream itself</li>
+          </ul>
+          <p class="tech">TypeScript · Hono · SQLite · SSE · React · Docker</p>
+          <p class="note" data-i18n="relay.note">The live demo runs the same backend code inside a Service Worker.</p>
+          <div class="links">
+            <a class="btn primary" href="https://chop-prog.github.io/relay/" target="_blank" rel="noopener" data-i18n="live">Live demo</a>
+            <a class="btn" href="https://github.com/chop-prog/relay" target="_blank" rel="noopener" data-i18n="code">Source code</a>
+          </div>
+        </div>
+      </article>
 
       <article class="project reveal" style="--accent:#818cf8">
         <a class="shot" href="https://chop-prog.github.io/flowboard/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
           <img src="assets/flowboard.png" width="1440" height="900" alt="" loading="lazy" decoding="async">
         </a>
         <div class="info">
-          <p class="tag"><span>01</span> <span data-i18n="flowboard.tag">Product UI</span></p>
+          <p class="tag"><span>02</span> <span data-i18n="flowboard.tag">Product UI</span></p>
           <h3>Flowboard</h3>
           <p data-i18n="flowboard.desc">A keyboard-first kanban board in the spirit of Linear and Trello: drag & drop, a ⌘K command palette, undo/redo for every action, filters, offline persistence.</p>
           <ul>
@@ -89,7 +112,7 @@
           <img src="assets/aurora.jpg" width="1440" height="900" alt="" loading="lazy" decoding="async">
         </a>
         <div class="info">
-          <p class="tag"><span>02</span> <span data-i18n="aurora.tag">Graphics · WebGL2</span></p>
+          <p class="tag"><span>03</span> <span data-i18n="aurora.tag">Graphics · WebGL2</span></p>
           <h3>Aurora</h3>
           <p data-i18n="aurora.desc">Real-time fluid dynamics in the browser. The Navier–Stokes equations are solved on the GPU every frame, and you stir the fluid with the mouse.</p>
           <ul>
@@ -110,7 +133,7 @@
           <img src="assets/void-pulse.jpg" width="1280" height="720" alt="" loading="lazy" decoding="async">
         </a>
         <div class="info">
-          <p class="tag"><span>03</span> <span data-i18n="void.tag">Game · Canvas</span></p>
+          <p class="tag"><span>04</span> <span data-i18n="void.tag">Game · Canvas</span></p>
           <h3>VOID PULSE</h3>
           <p data-i18n="void.desc">A neon twin-stick roguelite with its own engine: a warping spring-mass grid, bloom, a boss fight and music synthesised entirely in Web Audio.</p>
           <ul>
@@ -127,6 +150,54 @@
       </article>
     </section>
 
+    <section id="notes" class="section">
+      <header class="section-head reveal">
+        <h2 data-i18n="eng.title">Engineering notes</h2>
+        <p data-i18n="eng.lead">A few decisions from these projects, with the code behind them.</p>
+      </header>
+      <div class="notes">
+        <article class="note-card reveal">
+          <p class="note-tag">Relay · <a href="https://github.com/chop-prog/relay/blob/main/web/sw.ts" target="_blank" rel="noopener">web/sw.ts</a></p>
+          <h3 data-i18n="eng.relay.title">One backend, two runtimes</h3>
+          <p data-i18n="eng.relay.body">The Hono app depends only on interfaces. Node runs it with SQLite; the GitHub Pages demo runs the same code in a Service Worker with an in-memory store, so the public demo goes through the real validation, auth and SSE paths.</p>
+<pre><code><span class="k">const</span> app = createApp({ store, signer, runtime: <span class="s">'service-worker'</span> });
+
+self.addEventListener(<span class="s">'fetch'</span>, (e) =&gt; {
+  <span class="k">if</span> (!isApiRequest(e.request)) <span class="k">return</span>;
+  e.respondWith(app.fetch(toAppRequest(e.request)));
+});</code></pre>
+        </article>
+        <article class="note-card reveal">
+          <p class="note-tag">Flowboard · <a href="https://github.com/chop-prog/flowboard/blob/main/src/components/BoardView.tsx" target="_blank" rel="noopener">BoardView.tsx</a></p>
+          <h3 data-i18n="eng.flow.title">One undo step per drag</h3>
+          <p data-i18n="eng.flow.body">While a card is dragged, a local preview layout moves it between columns so the board makes room live. A single action is committed on drop, which keeps the undo history clean.</p>
+<pre><code><span class="c">// during drag: local only, nothing in history</span>
+setLayout(moveBetweenColumns(layout, id, from, to, index));
+
+<span class="c">// on drop: exactly one undoable action</span>
+dispatch({ type: <span class="s">'card/move'</span>, id, toColumnId, toIndex });</code></pre>
+        </article>
+        <article class="note-card reveal">
+          <p class="note-tag">Aurora · <a href="https://github.com/chop-prog/aurora/blob/main/src/shaders.js" target="_blank" rel="noopener">shaders.js</a></p>
+          <h3 data-i18n="eng.aurora.title">Navier–Stokes in a few shader passes</h3>
+          <p data-i18n="eng.aurora.body">Each frame advects, adds vorticity confinement, solves pressure with Jacobi iterations and projects the velocity field to make it divergence-free, all in fragment shaders on half-float textures.</p>
+<pre><code><span class="c">// one Jacobi iteration of ∇²p = ∇·u</span>
+<span class="k">float</span> L = texture(uPressure, vL).x;  <span class="c">// …R, T, B</span>
+<span class="k">float</span> div = texture(uDivergence, vUv).x;
+fragColor = vec4((L + R + B + T - div) * <span class="n">0.25</span>, <span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>);</code></pre>
+        </article>
+        <article class="note-card reveal">
+          <p class="note-tag">VOID PULSE · <a href="https://github.com/chop-prog/void-pulse/blob/main/src/engine/particles.js" target="_blank" rel="noopener">particles.js</a></p>
+          <h3 data-i18n="eng.void.title">Thousands of sparks, a few draw calls</h3>
+          <p data-i18n="eng.void.body">Particles live in typed arrays with swap-remove. At draw time they are counting-sorted into colour × alpha buckets, so the whole system costs one stroke() call per bucket.</p>
+<pre><code><span class="k">for</span> (i = <span class="n">0</span>; i &lt; n; i++) counts[keys[i] = bucketOf(i)]++;
+prefixSum(counts);
+<span class="k">for</span> (i = <span class="n">0</span>; i &lt; n; i++) order[counts[keys[i]]++] = i;
+<span class="c">// draw: beginPath() / stroke() only when the bucket changes</span></code></pre>
+        </article>
+      </div>
+    </section>
+
     <section id="skills" class="section">
       <header class="section-head reveal">
         <h2 data-i18n="skills.title">Toolbox</h2>
@@ -136,6 +207,10 @@
         <div class="skill-group reveal">
           <h3 data-i18n="skills.core">Core</h3>
           <ul><li>JavaScript (ES2023)</li><li>TypeScript</li><li>HTML</li><li>CSS</li><li>ES modules</li></ul>
+        </div>
+        <div class="skill-group reveal">
+          <h3 data-i18n="skills.backend">Backend</h3>
+          <ul><li>Node.js</li><li>Hono</li><li>REST & RFC 7807</li><li>SQLite / SQL</li><li>Server-Sent Events</li><li>Zod</li><li>HMAC auth</li><li>Rate limiting</li><li>Docker</li></ul>
         </div>
         <div class="skill-group reveal">
           <h3 data-i18n="skills.ui">UI & state</h3>
