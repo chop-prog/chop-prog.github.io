@@ -1,0 +1,15 @@
+{
+  "name": "chop-prog-portfolio",
+  "version": "1.0.0",
+  "description": "Portfolio site of chop-prog: frontend developer.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "node scripts/serve.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
