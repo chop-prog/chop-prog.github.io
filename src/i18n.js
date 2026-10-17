@@ -47,8 +47,9 @@ export const STRINGS = {
     'about.p2': 'I like knowing how things work under the hood, so I don\'t mind writing a physics loop or a shader by hand. I also know when a good library is the right call: Flowboard uses React and dnd-kit for exactly that reason.',
     'about.p3': 'Every project here has automated tests, a README that explains the decisions, and a CI pipeline that deploys on every push.',
     'contact.title': 'Let\'s build something.',
-    'contact.lead': 'I\'m open to frontend developer roles. The fastest way to reach me is through GitHub.',
+    'contact.lead': 'I\'m open to frontend developer roles. The fastest way to reach me is Telegram.',
     'contact.cta': 'Open my GitHub',
+    'contact.location': 'Moscow, Russia',
     'footer.made': 'Hand-built: plain HTML, CSS and JavaScript, no frameworks.',
   },
   ru: {
@@ -95,8 +96,9 @@ export const STRINGS = {
     'about.p2': 'Мне нравится понимать, как всё устроено изнутри, поэтому я спокойно пишу физический цикл или шейдер руками. Но я знаю и когда правильнее взять хорошую библиотеку: во Flowboard ровно поэтому используются React и dnd-kit.',
     'about.p3': 'У каждого проекта здесь есть автотесты, README с объяснением решений и CI, который деплоит при каждом пуше.',
     'contact.title': 'Давайте сделаем что-нибудь вместе.',
-    'contact.lead': 'Ищу работу frontend-разработчиком. Быстрее всего со мной можно связаться через GitHub.',
+    'contact.lead': 'Ищу работу frontend-разработчиком. Быстрее всего со мной можно связаться в Telegram.',
     'contact.cta': 'Открыть мой GitHub',
+    'contact.location': 'Москва, Россия',
     'footer.made': 'Сделано вручную: чистые HTML, CSS и JavaScript без фреймворков.',
   },
 };
