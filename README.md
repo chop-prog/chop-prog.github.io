@@ -21,6 +21,7 @@
 
 - Plain HTML, CSS and ES modules, with no framework and no build step.
 - **Bilingual (EN/RU).** The HTML ships in English so it works without JavaScript and is easy for crawlers to read. The language is picked from the browser, can be switched, and the choice is remembered. A test checks that both dictionaries stay in sync with the markup.
+- **Particle playground.** Type anything and ~16,000 particles assemble into it. The text is rasterised to an offscreen canvas and sampled into targets; each particle is a damped spring with a pointer force field and click shockwaves ([`src/swarm.js`](src/swarm.js), pure and unit-tested). WebGL2 draws the whole swarm in one call with additive blending and motion trails, with a Canvas 2D fallback. The loop runs only while the panel is visible; under `prefers-reduced-motion` the shape is drawn once, without animation.
 - **Animated flow-field background.** It is rendered at half resolution, pauses when the tab is hidden, and is static under `prefers-reduced-motion`.
 - **Progressive enhancement.** The reveal animations hide content only once JavaScript is running.
 - **Accessibility:** a skip link, visible focus states, `aria-pressed` on the language toggle, and semantic sections.

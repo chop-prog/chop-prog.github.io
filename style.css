@@ -541,7 +541,90 @@ html[lang='ru'] .hero h1 { max-width: 22ch; font-size: clamp(34px, 4.4vw, 60px);
 .note-card { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s; }
 .note-card:hover { transform: translateY(-4px); border-color: rgba(129, 140, 248, 0.35); }
 
+/* ── Particle playground ─────────────────────────────────────────────────── */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.playground { padding: 64px 0 30px; }
+.pg {
+  position: relative;
+  height: 540px;
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background: #0a0b12;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: 0 50px 120px -50px rgba(129, 140, 248, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+}
+/* Slowly orbiting light along the border. */
+.pg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 1px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--angle), transparent 0 70%, var(--mint) 80%, var(--indigo) 88%, var(--pink) 94%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: spin-border 8s linear infinite;
+  pointer-events: none;
+}
+.pg canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; cursor: crosshair; }
+.pg-top, .pg-bottom { position: absolute; left: 28px; right: 28px; z-index: 1; }
+.pg-top { top: 24px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; pointer-events: none; }
+.pg-kicker { display: flex; align-items: center; gap: 10px; margin: 0; font: 500 12px var(--mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--mint); }
+.playground .pg-title { margin: 8px 0 4px; font: 400 clamp(32px, 4vw, 46px)/1 var(--serif); }
+.pg-hint { margin: 0; font-size: 14px; color: var(--muted); }
+.pg-hud { display: grid; gap: 2px; margin: 0; font: 500 12px/1.5 var(--mono); color: #6b7394; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pg-hud span span:first-child { color: var(--text); }
+.pg-bottom { bottom: 22px; display: flex; flex-wrap: wrap; gap: 10px; }
+.pg-input {
+  flex: 1 1 240px;
+  min-width: 0;
+  height: 48px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(7, 8, 13, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text);
+  font: 500 16px var(--sans);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.pg-input::placeholder { color: #6b7394; }
+.pg-input:focus { outline: none; border-color: var(--mint); box-shadow: 0 0 0 4px rgba(124, 245, 208, 0.15); }
+.pg-chips { display: flex; gap: 8px; }
+.pg-chip {
+  height: 48px;
+  min-width: 48px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(7, 8, 13, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--muted);
+  font: 500 14px var(--mono);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.pg-chip:hover { color: var(--text); border-color: rgba(255, 255, 255, 0.25); }
+.pg-chip[aria-pressed='true'] { color: var(--mint); border-color: rgba(124, 245, 208, 0.5); background: rgba(124, 245, 208, 0.08); }
+.pg-how { margin: 18px 6px 0; max-width: 860px; font-size: 14px; color: var(--muted); }
+.pg-how a { color: var(--indigo); font-family: var(--mono); font-size: 13px; text-underline-offset: 3px; }
+@media (max-width: 640px) {
+  .pg { height: 500px; border-radius: 22px; }
+  .pg-top, .pg-bottom { left: 16px; right: 16px; }
+  .pg-top { top: 18px; flex-direction: column; gap: 6px; }
+  .pg-hud { text-align: left; grid-auto-flow: column; gap: 12px; }
+  .pg-bottom { bottom: 16px; }
+  .pg-input { flex-basis: 100%; }
+  .pg-chips { width: 100%; }
+  .pg-chip { flex: 1 1 auto; padding: 0 10px; font-size: 13px; white-space: nowrap; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .grain, .kicker::after, .marquee .track, .project::after, .btn.primary::before { animation: none; }
+  .grain, .kicker::after, .marquee .track, .project::after, .btn.primary::before, .pg::after { animation: none; }
   .hero h1 .w { animation: none; opacity: 1; filter: none; transform: none; }
 }

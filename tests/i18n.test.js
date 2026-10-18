@@ -23,6 +23,13 @@ test('every data-i18n key used in the HTML exists, and the HTML ships the Englis
     assert.equal(decoded, STRINGS.en[key], `HTML text for ${key} differs from the dictionary`);
   }
   const keysInHtml = new Set(used.map(([, key]) => key));
+  // Translated attributes: data-i18n-placeholder="key" placeholder="English text", same for aria-label.
+  for (const [tag, attr, key] of html.matchAll(/<[^>]*\bdata-i18n-(placeholder|aria-label)="([^"]+)"[^>]*>/g)) {
+    assert.ok(key in STRINGS.en, `missing key ${key}`);
+    const value = tag.match(new RegExp(`\\s${attr}="([^"]*)"`))?.[1];
+    assert.equal(value, STRINGS.en[key], `HTML ${attr} for ${key} differs from the dictionary`);
+    keysInHtml.add(key);
+  }
   for (const key of Object.keys(STRINGS.en)) assert.ok(keysInHtml.has(key), `unused key ${key}`);
 });
 

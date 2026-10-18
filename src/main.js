@@ -1,5 +1,6 @@
 import { STRINGS, detectLang } from './i18n.js';
 import { initEffects, splitWords } from './effects.js';
+import { initPlayground } from './playground.js';
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Reveal animations only hide content once we know JS is running.
@@ -13,6 +14,8 @@ function setLang(lang) {
     const text = dict[el.dataset.i18n];
     if (text) el.textContent = text;
   }
+  for (const el of document.querySelectorAll('[data-i18n-placeholder]')) el.placeholder = dict[el.dataset.i18nPlaceholder] ?? el.placeholder;
+  for (const el of document.querySelectorAll('[data-i18n-aria-label]')) el.setAttribute('aria-label', dict[el.dataset.i18nAriaLabel] ?? el.getAttribute('aria-label'));
   for (const b of document.querySelectorAll('[data-lang]')) b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
   try { localStorage.setItem('lang', lang); } catch { /* ignore */ }
   splitWords(document.querySelector('.hero h1'));
@@ -164,3 +167,6 @@ if (reduced) {
 }
 
 initEffects();
+
+const playground = document.querySelector('.playground');
+if (playground) initPlayground(playground, { reduced });
