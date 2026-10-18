@@ -305,6 +305,7 @@ html[lang='ru'] .hero h1 { max-width: 22ch; font-size: clamp(34px, 4.4vw, 60px);
 .project .note { margin: -8px 0 20px !important; font-size: 14px; color: var(--mint) !important; }
 .notes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 .note-card {
+  min-width: 0; /* let <pre> scroll instead of stretching the grid column */
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -335,3 +336,172 @@ html[lang='ru'] .hero h1 { max-width: 22ch; font-size: clamp(34px, 4.4vw, 60px);
 .note-card .n { color: #f78c6c; }
 .note-card .c { color: #6b7394; font-style: italic; }
 @media (max-width: 900px) { .notes { grid-template-columns: 1fr; } }
+/* ── Effects (progressive enhancement; see src/effects.js) ───────────────── */
+@property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+
+.progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  height: 2px;
+  background: linear-gradient(90deg, var(--mint), var(--indigo), var(--pink));
+  transform-origin: left;
+  transform: scaleX(var(--p, 0));
+  box-shadow: 0 0 12px rgba(124, 245, 208, 0.6);
+}
+
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1.2s steps(6) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-2%, -1%); }
+  80% { transform: translate(3%, 3%); }
+}
+
+.cursor-glow { display: none; }
+.fx .cursor-glow {
+  display: block;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  width: 640px;
+  height: 640px;
+  margin: -320px 0 0 -320px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(124, 245, 208, 0.13), rgba(129, 140, 248, 0.07) 40%, transparent 70%);
+  will-change: transform;
+}
+
+/* Hero title words rise out of a blur, one after another. */
+.hero h1.split { background: none; }
+.hero h1 .w {
+  display: inline-block;
+  background: linear-gradient(180deg, #fff 40%, #a9b0c8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0;
+  filter: blur(12px);
+  transform: translateY(0.35em) rotate(2deg);
+  animation: word-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: calc(150ms + var(--i) * 55ms);
+}
+@keyframes word-in { to { opacity: 1; filter: blur(0); transform: none; } }
+
+/* Shimmer sweep across the kicker pill. */
+.kicker { position: relative; overflow: hidden; }
+.kicker::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.14) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: shimmer 3.5s ease-in-out 1s infinite;
+}
+@keyframes shimmer { 60%, 100% { transform: translateX(100%); } }
+
+/* Tech marquee. */
+.marquee {
+  margin: 10px calc(50% - 50vw) 0;
+  padding: 18px 0;
+  border-block: 1px solid var(--border);
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.marquee .track { display: flex; width: max-content; gap: 14px; animation: marquee 40s linear infinite; }
+.marquee:hover .track { animation-play-state: paused; }
+.marquee span {
+  padding: 7px 16px;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.03);
+  font: 500 14px var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.marquee span:nth-child(3n + 1) { color: var(--mint); }
+.marquee span:nth-child(3n + 2) { color: #aab2ff; }
+@keyframes marquee { to { transform: translateX(calc(-50% - 7px)); } }
+
+/* Rotating gradient border on project cards (shown on hover). */
+.project::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 1px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--angle), transparent 0 60%, var(--accent) 75%, #fff 80%, var(--accent) 85%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0;
+  transition: opacity 0.4s;
+  animation: spin-border 4s linear infinite;
+  pointer-events: none;
+}
+.project:hover::after { opacity: 1; }
+@keyframes spin-border { to { --angle: 360deg; } }
+
+/* 3D tilt + glare on screenshots (fine pointers only). */
+.fx .shot {
+  --rx: 0deg;
+  --ry: 0deg;
+  position: relative;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.25s ease-out, box-shadow 0.3s;
+  transform-style: preserve-3d;
+}
+.fx .shot:hover { box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent); }
+.fx .shot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.22), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.fx .shot:hover::after { opacity: 1; }
+
+/* Magnetic buttons. */
+.fx .btn { translate: var(--bx, 0px) var(--by, 0px); transition: translate 0.2s ease-out, transform 0.15s, border-color 0.2s, background 0.2s, box-shadow 0.2s; }
+
+/* Glow on the primary call to action. */
+.btn.primary { position: relative; }
+.btn.primary::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--mint), var(--indigo), var(--pink), var(--mint));
+  background-size: 300% 100%;
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.3s;
+  animation: hue 6s linear infinite;
+}
+.btn.primary:hover::before { opacity: 0.7; }
+@keyframes hue { to { background-position: 300% 0; } }
+
+/* Engineering note cards lift slightly. */
+.note-card { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s; }
+.note-card:hover { transform: translateY(-4px); border-color: rgba(129, 140, 248, 0.35); }
+
+@media (prefers-reduced-motion: reduce) {
+  .grain, .kicker::after, .marquee .track, .project::after, .btn.primary::before { animation: none; }
+  .hero h1 .w { animation: none; opacity: 1; filter: none; transform: none; }
+}
