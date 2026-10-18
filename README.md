@@ -15,7 +15,7 @@
 | 05 | [**Flowboard**](https://github.com/chop-prog/flowboard): keyboard-first kanban app | React 19 · TypeScript · dnd-kit · Vitest |
 | 06 | [**Facet UI**](https://github.com/chop-prog/facet): accessible React components with OKLCH theming | React · TypeScript · axe-core |
 | 07 | [**Aurora**](https://github.com/chop-prog/aurora): real-time GPU fluid simulation | WebGL2 · GLSL |
-| 08 | [**VOID PULSE**](https://github.com/chop-prog/void-pulse): twin-stick roguelite with a custom engine | Canvas 2D · Web Audio · PWA |
+| 08 | [**VOID PULSE**](https://github.com/chop-prog/void-pulse): twin-stick roguelite with a custom engine and online co-op | Canvas 2D · WebRTC · Web Audio · PWA |
 
 ## Lab
 
