@@ -213,7 +213,46 @@ html[lang='ru'] .hero h1 { max-width: 22ch; font-size: clamp(34px, 4.4vw, 60px);
 .tech { margin: 0 0 20px !important; font: 500 13px var(--mono); color: var(--muted) !important; }
 .links { display: flex; flex-wrap: wrap; gap: 10px; }
 
-.skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+/* Compact cards for the rest of the projects. */
+.more-title { margin: 72px 0 24px; font: 500 13px var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.minis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.mini {
+  --accent: var(--mint);
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  overflow: hidden;
+  isolation: isolate;
+  transition: border-color 0.3s;
+}
+.mini::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(400px circle at var(--mx) var(--my), color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.mini:hover { border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); }
+.mini:hover::before { opacity: 1; }
+.mini .shot { margin-bottom: 18px; }
+.mini:hover .shot img { transform: scale(1.03); }
+.mini .tag { margin: 0 6px 8px; }
+.mini h4 { margin: 0 6px 8px; font-size: 22px; font-weight: 700; letter-spacing: -0.015em; }
+.mini > p:not(.tag):not(.tech) { flex: 1; margin: 0 6px 14px; font-size: 15px; color: #c4c9db; }
+.mini .tech { margin: 0 6px 16px !important; }
+.mini .links { margin: 0 6px; }
+
+.skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .skill-group {
   --mx: 50%;
   --my: 50%;
@@ -290,7 +329,8 @@ html[lang='ru'] .hero h1 { max-width: 22ch; font-size: clamp(34px, 4.4vw, 60px);
   .nav nav { display: none; }
   .lang { margin-left: auto; }
   main { padding: 0 16px; }
-  .skills { grid-template-columns: 1fr; }
+  .skills, .minis { grid-template-columns: 1fr; }
+  .more-title { margin-top: 48px; }
   .project { padding: 14px; border-radius: 20px; }
   .info h3 { font-size: 26px; }
   .footer { padding: 24px 16px 32px; }

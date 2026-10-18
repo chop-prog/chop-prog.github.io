@@ -22,6 +22,8 @@ test('every data-i18n key used in the HTML exists, and the HTML ships the Englis
     const decoded = text.replace(/&amp;/g, '&').trim();
     assert.equal(decoded, STRINGS.en[key], `HTML text for ${key} differs from the dictionary`);
   }
+  const keysInHtml = new Set(used.map(([, key]) => key));
+  for (const key of Object.keys(STRINGS.en)) assert.ok(keysInHtml.has(key), `unused key ${key}`);
 });
 
 test('language detection: saved choice wins, then browser languages', () => {

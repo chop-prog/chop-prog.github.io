@@ -50,7 +50,7 @@ function countUp(el) {
 }
 
 // ── Pointer spotlight on project cards ───────────────────────────────────────
-for (const card of document.querySelectorAll('.project, .skill-group')) {
+for (const card of document.querySelectorAll('.project, .mini, .skill-group')) {
   card.addEventListener('pointermove', (e) => {
     const r = card.getBoundingClientRect();
     card.style.setProperty('--mx', `${e.clientX - r.left}px`);
