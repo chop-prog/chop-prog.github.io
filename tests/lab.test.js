@@ -6,6 +6,17 @@ const root = new URL('../', import.meta.url);
 const html = readFileSync(new URL('index.html', root), 'utf8');
 const cards = [...html.matchAll(/<a class="lab-card" href="lab\/([^/"]+)\/"[\s\S]*?<img src="([^"]+)"/g)];
 
+test('the Pages deploy copies everything the page links to', () => {
+  const ci = readFileSync(new URL('.github/workflows/ci.yml', root), 'utf8');
+  const copied = ci.match(/cp -r (.+) _site\//)?.[1].split(/\s+/) ?? [];
+  const refs = [...html.matchAll(/\s(?:href|src)="([^"]+)"/g)]
+    .map(([, ref]) => ref)
+    .filter((ref) => !/^([a-z][a-z0-9+.-]*:|#|\/\/)/i.test(ref)) // skip https:, data:, anchors
+    .map((ref) => ref.split('/')[0]);
+  assert.ok(refs.length > 10);
+  for (const top of new Set(refs)) assert.ok(copied.includes(top), `"${top}" is linked from index.html but not deployed`);
+});
+
 test('the lab section links four demos', () => {
   assert.equal(cards.length, 4);
 });
