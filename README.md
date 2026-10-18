@@ -17,6 +17,19 @@
 | 07 | [**Aurora**](https://github.com/chop-prog/aurora): real-time GPU fluid simulation | WebGL2 · GLSL |
 | 08 | [**VOID PULSE**](https://github.com/chop-prog/void-pulse): twin-stick roguelite with a custom engine | Canvas 2D · Web Audio · PWA |
 
+## Lab
+
+Small visual experiments, each a single HTML file with no libraries, served from [`lab/`](lab):
+
+| Demo | What it is |
+|---|---|
+| [Mandelbulb](https://chop-prog.github.io/lab/mandelbulb/) | 3D fractal ray-marched in a WebGL fragment shader, with resolution that adapts to the GPU |
+| [Crystal](https://chop-prog.github.io/lab/crystal/) | the five Platonic solids in 3D on Canvas 2D: hand-written projection, depth sorting and lighting |
+| [Mountains](https://chop-prog.github.io/lab/mountains/) | procedural layered landscape that runs from dawn to night under the cursor |
+| [Live wallpaper](https://chop-prog.github.io/lab/wallpaper/) | four colour moods blended by the cursor, parallax stars and click ripples |
+
+[`lab/lab.js`](lab/lab.js) gives them the portfolio's language choice (EN/RU) and a link back.
+
 ## About this site
 
 - Plain HTML, CSS and ES modules, with no framework and no build step.

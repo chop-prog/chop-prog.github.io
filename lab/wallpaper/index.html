@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Живые обои</title>
+<meta name="description" content="Live wallpaper: layered colour fields with parallax stars that change as you move the mouse.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2307080d'/%3E%3Cpath d='M9 11l-4 5 4 5M23 11l4 5-4 5M18 8l-4 16' fill='none' stroke='%237cf5d0' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script src="../lab.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500&display=swap" rel="stylesheet">
+<style>
+:root{--fg:#fff;--dim:rgba(255,255,255,.62);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0;background:#07060d;overflow:hidden;color:var(--fg);font-family:'Unbounded',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.ui{position:fixed;left:0;right:0;bottom:0;padding:0 clamp(20px,4vw,56px) calc(clamp(20px,4vw,48px) + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;gap:24px;pointer-events:none;text-shadow:0 2px 24px rgba(0,0,0,.35)}
+h1{margin:0;font-weight:300;font-size:clamp(34px,7vw,92px);line-height:1;letter-spacing:-.03em}
+#name{font-weight:500;display:block;transition:opacity .4s}
+.hint{font-weight:300;font-size:clamp(12px,1.3vw,15px);color:var(--dim);margin-top:14px;transition:opacity 1s}
+.bar{display:flex;gap:6px;width:min(220px,34vw)}
+.bar i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.22);position:relative;overflow:hidden}
+.bar i b{position:absolute;inset:0;background:#fff;transform-origin:left;transform:scaleX(0)}
+</style>
+</head>
+<body data-title-en="Live wallpaper">
+<canvas id="c"></canvas>
+<div class="ui">
+  <div>
+    <h1><span id="name" data-en="Dawn">Рассвет</span></h1>
+    <div class="hint" id="hint" data-en="Move the mouse across the screen and the wallpaper changes. Click sends a wave of light, H hides the text, F goes full screen">Ведите мышью вдоль экрана — обои меняются. Клик — волна света, H — скрыть текст, F — во весь экран</div>
+  </div>
+  <div class="bar" id="bar"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div>
+</div>
+<script>
+(function(){
+var P=[
+ {n:LAB.t('Рассвет','Dawn'),bg:[265,45,8],c:[[340,90,60],[20,95,60],[280,80,55],[45,95,65]]},
+ {n:LAB.t('Океан','Ocean'),bg:[215,60,7],c:[[190,95,55],[220,90,55],[170,85,50],[250,80,60]]},
+ {n:LAB.t('Неон','Neon'),bg:[285,60,6],c:[[310,100,60],[180,100,55],[270,95,60],[330,100,65]]},
+ {n:LAB.t('Лес','Forest'),bg:[160,45,6],c:[[140,70,45],[165,80,45],[90,70,50],[190,70,50]]}
+];
+function rgb(h,s,l){s/=100;l/=100;var k=function(n){return(n+h/30)%12},a=s*Math.min(l,1-l),f=function(n){return l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)))};return[f(0)*255,f(8)*255,f(4)*255]}
+P.forEach(function(p){p.bgr=rgb.apply(null,p.bg);p.cr=p.c.map(function(c){return rgb.apply(null,c)})});
+function mix(a,b,t){return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]}
+var cv=document.getElementById('c'),ctx=cv.getContext('2d'),W,H,D;
+function size(){D=Math.min(window.devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*D;cv.height=H*D;ctx.setTransform(D,0,0,D,0,0)}
+addEventListener('resize',size);size();
+var m={x:.5,y:.5},s={x:.5,y:.5},last=0,moved=false;
+function pm(e){var t=e.touches?e.touches[0]:e;m.x=t.clientX/W;m.y=t.clientY/H;last=performance.now();if(!moved){moved=true;document.getElementById('hint').style.opacity=0}}
+addEventListener('pointermove',pm);addEventListener('touchmove',pm,{passive:true});
+var stars=[];for(var L=0;L<3;L++)for(var i=0;i<70;i++)stars.push({x:Math.random(),y:Math.random(),l:L,r:Math.random()*1.2+.3,p:Math.random()*6});
+var rip=[];addEventListener('pointerdown',function(e){rip.push({x:e.clientX,y:e.clientY,t:performance.now()})});
+var seeds=[0,1,2,3].map(function(i){return{a:i*1.7,sp:.00012+i*.00005,fx:.28+i*.07,fy:.22+i*.06}});
+var nameEl=document.getElementById('name'),bars=document.querySelectorAll('#bar b'),cur=-1;
+function frame(t){
+  var idle=(performance.now()-last)>3500;
+  if(idle){m.x=.5+.42*Math.sin(t*.00007);m.y=.5+.3*Math.sin(t*.00011+1)}
+  s.x+=(m.x-s.x)*.05;s.y+=(m.y-s.y)*.05;
+  var f=Math.max(0,Math.min(.9999,s.x))*(P.length-1),i0=Math.floor(f),tt=f-i0,e=tt*tt*(3-2*tt);
+  var A=P[i0],B=P[i0+1];
+  var near=Math.round(f);if(near!==cur){cur=near;nameEl.style.opacity=0;setTimeout(function(){nameEl.textContent=P[cur].n;nameEl.style.opacity=1},180)}
+  bars.forEach(function(b,i){var v=Math.max(0,Math.min(1,f-i+ (i===0?1:0)));if(i>0)v=Math.max(0,Math.min(1,f-i+1));b.style.transform='scaleX('+(i===0?Math.min(1,f+1):v)+')'});
+  var bg=mix(A.bgr,B.bgr,e);
+  ctx.globalCompositeOperation='source-over';
+  ctx.fillStyle='rgb('+bg.map(Math.round)+')';ctx.fillRect(0,0,W,H);
+  ctx.globalCompositeOperation='lighter';
+  var R=Math.max(W,H)*(.55+.25*s.y);
+  for(var i=0;i<4;i++){
+    var c=mix(A.cr[i],B.cr[i],e),sd=seeds[i],k=t*sd.sp*6;
+    var depth=.25+i*.22;
+    var x=W*(.5+.34*Math.sin(k*sd.fx*6+sd.a))+(s.x-.5)*W*depth*1.1;
+    var y=H*(.5+.3*Math.cos(k*sd.fy*6+sd.a*1.3))+(s.y-.5)*H*depth*1.1;
+    var r=R*(.6+.12*i);
+    var g=ctx.createRadialGradient(x,y,0,x,y,r),col=c.map(Math.round).join(',');
+    g.addColorStop(0,'rgba('+col+','+(.55+.25*s.y)+')');g.addColorStop(.5,'rgba('+col+',.16)');g.addColorStop(1,'rgba('+col+',0)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  }
+  for(var ri=rip.length-1;ri>=0;ri--){var rq=rip[ri],ag=(performance.now()-rq.t)/1800;if(ag>1){rip.splice(ri,1);continue}var rr=ag*Math.max(W,H)*.55,al=(1-ag)*(1-ag),rg=ctx.createRadialGradient(rq.x,rq.y,rr*.8,rq.x,rq.y,rr+2);rg.addColorStop(0,'rgba(255,255,255,0)');rg.addColorStop(.9,'rgba(255,255,255,'+.35*al+')');rg.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=rg;ctx.fillRect(0,0,W,H)}
+  // stars with parallax
+  var sc=mix(A.cr[1],B.cr[1],e);
+  for(var j=0;j<stars.length;j++){
+    var st=stars[j],d=(st.l+1)*26;
+    var px=((st.x*W-(s.x-.5)*d*2)%W+W)%W,py=((st.y*H-(s.y-.5)*d*2)%H+H)%H;
+    var tw=.45+.55*Math.sin(t*.0015+st.p);
+    ctx.fillStyle='rgba(255,255,255,'+(.15+.55*tw*(st.l+1)/3)+')';
+    ctx.beginPath();ctx.arc(px,py,st.r*(st.l+1)*.7,0,6.283);ctx.fill();
+  }
+  // cursor light
+  var cx=s.x*W,cy=s.y*H,cr=Math.max(W,H)*.16,cc=mix(A.cr[0],B.cr[0],e).map(function(v){return Math.round(v*.5+127)}).join(',');
+  var g2=ctx.createRadialGradient(cx,cy,0,cx,cy,cr);
+  g2.addColorStop(0,'rgba('+cc+',.32)');g2.addColorStop(1,'rgba('+cc+',0)');
+  ctx.fillStyle=g2;ctx.fillRect(cx-cr,cy-cr,cr*2,cr*2);
+  requestAnimationFrame(frame);
+}
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){seeds.forEach(function(q){q.sp*=.2})}
+requestAnimationFrame(frame);
+addEventListener('keydown',function(e){var k=e.key.toLowerCase();if(k==='h'||k==='р'){var u=document.querySelector('.ui');u.style.transition='opacity .4s';u.style.opacity=u.style.opacity==='0'?'1':'0'}if(k==='f'||k==='а'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}});
+})();
+</script>
+</body>
+</html>

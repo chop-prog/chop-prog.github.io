@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Мандельбульб · фрактал в реальном времени</title>
+<meta name="description" content="Mandelbulb: a 3D fractal ray-marched on the GPU in real time.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2307080d'/%3E%3Cpath d='M9 11l-4 5 4 5M23 11l4 5-4 5M18 8l-4 16' fill='none' stroke='%237cf5d0' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script src="../lab.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0;overflow:hidden;background:#040309;color:#fff;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.ui{position:fixed;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:calc(clamp(18px,3.5vw,44px) + env(safe-area-inset-top,0px)) clamp(18px,3.5vw,48px) calc(clamp(18px,3.5vw,44px) + env(safe-area-inset-bottom,0px));text-shadow:0 1px 18px rgba(0,0,0,.7)}
+h1{margin:0;font-weight:300;font-size:clamp(30px,5.5vw,72px);letter-spacing:-.04em;line-height:1}
+.sub{font-weight:300;font-size:clamp(12px,1.25vw,15px);color:rgba(255,255,255,.65);margin-top:12px;max-width:52ch;line-height:1.55}
+.hud{font-size:clamp(11px,1.1vw,13px);color:rgba(255,255,255,.75);line-height:1.7;white-space:pre}
+.err{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:32px;text-align:center;background:#040309;font-size:14px;line-height:1.6;white-space:pre-wrap}
+</style>
+</head>
+<body data-title-en="Mandelbulb · a real-time fractal">
+<canvas id="c"></canvas>
+<div class="ui">
+  <div>
+    <h1 data-en="Mandelbulb">Мандельбульб</h1>
+    <div class="sub" data-en="This is not an image or a video. Every pixel is a ray your GPU is tracing right now. Mouse moves the camera, the wheel zooms, hold a button to speed up the morph, double-click for another palette. H hides the text, F goes full screen.">Это не картинка и не видео. Каждый пиксель — луч, который прямо сейчас считает ваша видеокарта. Мышь — камера, колесо — зум, зажмите кнопку — ускорить превращение формы, двойной клик — другая палитра. H — скрыть текст, F — во весь экран.</div>
+  </div>
+  <div class="hud" id="hud"></div>
+</div>
+<div class="err" id="err"></div>
+<script>
+(function(){
+var cv=document.getElementById('c'),hud=document.getElementById('hud'),errEl=document.getElementById('err');
+function fail(m){errEl.style.display='flex';errEl.textContent=m}
+var gl=cv.getContext('webgl',{antialias:false,alpha:false,powerPreference:'high-performance'});
+if(!gl){fail(LAB.t('WebGL недоступен в этом браузере.\nОткройте страницу в Chrome, Firefox, Safari или Edge.','WebGL is not available in this browser.\nOpen the page in Chrome, Firefox, Safari or Edge.'));return}
+var VS='attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
+var FS=[
+'precision highp float;',
+'uniform vec2 uRes;uniform float uTime,uPow,uZoom,uHue;uniform vec2 uCam;uniform vec3 uD;',
+'float de(vec3 p,out vec4 trap){',
+'  vec3 w=p;float r=length(w),dz=1.0;trap=vec4(abs(w),dot(w,w));',
+'  for(int i=0;i<7;i++){',
+'    r=max(length(w),1e-5);',
+'    dz=uPow*pow(r,uPow-1.0)*dz+1.0;',
+'    float th=acos(clamp(w.y/r,-1.0,1.0))*uPow;',
+'    float ph=atan(w.x,w.z)*uPow;',
+'    w=p+pow(r,uPow)*vec3(sin(th)*sin(ph),cos(th),sin(th)*cos(ph));',
+'    trap=min(trap,vec4(abs(w),dot(w,w)));',
+'    if(dot(w,w)>16.0)break;',
+'  }',
+'  r=max(length(w),1e-5);',
+'  return 0.5*log(r)*r/dz;',
+'}',
+'vec3 pal(float t){return 0.5+0.5*cos(6.28318*(vec3(1.0,1.0,0.7)*t+uD));}',
+'void main(){',
+'  vec2 uv=(gl_FragCoord.xy*2.0-uRes)/uRes.y;',
+'  float cp=cos(uCam.y);',
+'  vec3 ro=uZoom*vec3(cp*sin(uCam.x),sin(uCam.y),cp*cos(uCam.x));',
+'  vec3 ww=normalize(-ro),uu=normalize(cross(ww,vec3(0.0,1.0,0.0))),vv=cross(uu,ww);',
+'  vec3 rd=normalize(uv.x*uu+uv.y*vv+1.7*ww);',
+'  float t=0.0,glow=0.0,st=0.0,d=1.0;vec4 tr=vec4(0.0);bool hit=false;',
+'  for(int i=0;i<100;i++){',
+'    d=de(ro+rd*t,tr);',
+'    glow+=exp(-16.0*d)*0.02;',
+'    if(d<0.0006*t){hit=true;break;}',
+'    t+=d;st+=1.0;',
+'    if(t>7.0)break;',
+'  }',
+'  vec3 bg=mix(vec3(0.012,0.010,0.035),vec3(0.05,0.03,0.11),uv.y*0.5+0.5);',
+'  vec3 L=normalize(vec3(0.6,0.75,0.4));',
+'  bg+=pal(uHue+0.3)*0.10*pow(max(dot(rd,L),0.0),6.0);',
+'  vec3 col=bg;',
+'  if(hit){',
+'    vec3 p=ro+rd*t;vec4 tmp;float e=0.0015*t;vec2 k=vec2(1.0,-1.0);',
+'    vec3 n=normalize(k.xyy*de(p+k.xyy*e,tmp)+k.yyx*de(p+k.yyx*e,tmp)+k.yxy*de(p+k.yxy*e,tmp)+k.xxx*de(p+k.xxx*e,tmp));',
+'    float ao=mix(0.2,1.0,pow(clamp(1.0-st/90.0,0.0,1.0),1.5));',
+'    float dif=clamp(dot(n,L),0.0,1.0);',
+'    float fil=clamp(dot(n,normalize(vec3(-0.6,-0.2,-0.5)))*0.5+0.5,0.0,1.0);',
+'    float fre=pow(1.0-clamp(dot(n,-rd),0.0,1.0),3.0);',
+'    float sp=pow(clamp(dot(reflect(-L,n),-rd),0.0,1.0),28.0);',
+'    vec3 base=pal(tr.y*0.5+tr.z*0.35+tr.x*0.15+uHue);',
+'    col=base*(0.07+dif*1.15)*ao+pal(uHue+0.55)*fil*0.18*ao+vec3(sp)*0.6*ao+pal(uHue+0.25)*fre*0.55*ao;',
+'    col=mix(col,bg,1.0-exp(-0.012*t*t));',
+'  }',
+'  col+=pal(uHue+0.25)*glow*0.55;',
+'  col*=1.0-0.32*dot(uv*0.5,uv*0.5);',
+'  col=1.0-exp(-col*1.5);',
+'  col=pow(col,vec3(0.4545));',
+'  col+=(fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453)-0.5)/255.0;',
+'  gl_FragColor=vec4(col,1.0);',
+'}'
+].join('\n');
+function sh(type,src){var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){fail(LAB.t('Ошибка шейдера:\n','Shader error:\n')+gl.getShaderInfoLog(s));throw 0}return s}
+var pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,VS));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(pr);
+if(!gl.getProgramParameter(pr,gl.LINK_STATUS)){fail(LAB.t('Ошибка линковки:\n','Link error:\n')+gl.getProgramInfoLog(pr));return}
+gl.useProgram(pr);
+var buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+var loc=gl.getAttribLocation(pr,'a');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+var U={};['uRes','uTime','uPow','uZoom','uHue','uCam','uD'].forEach(function(n){U[n]=gl.getUniformLocation(pr,n)});
+var q=.55,cw=0,ch=0,Dm=Math.min(devicePixelRatio||1,1.5);
+function size(){cw=Math.max(2,Math.floor(innerWidth*Dm*q));ch=Math.max(2,Math.floor(innerHeight*Dm*q));cv.width=cw;cv.height=ch;gl.viewport(0,0,cw,ch)}
+addEventListener('resize',size);size();
+var PD=[[0,.15,.2],[0,.33,.67],[.5,.2,0],[.3,.45,.7]],pi=0,cd=[0,.15,.2];addEventListener('dblclick',function(){pi=(pi+1)%PD.length});
+var m={x:.62,y:.56},s={x:.62,y:.56},last=0,pressed=false,zoomT=2.7,zoom=2.7;
+function pm(e){var t=e.touches?e.touches[0]:e;m.x=t.clientX/innerWidth;m.y=t.clientY/innerHeight;last=performance.now()}
+addEventListener('pointermove',pm);addEventListener('touchmove',pm,{passive:true});
+addEventListener('pointerdown',function(){pressed=true});addEventListener('pointerup',function(){pressed=false});
+addEventListener('wheel',function(e){e.preventDefault();zoomT=Math.max(1.5,Math.min(4.5,zoomT+e.deltaY*.0025))},{passive:false});
+var pd=0;addEventListener('touchmove',function(e){if(e.touches.length===2){var dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY,d=Math.hypot(dx,dy);if(pd)zoomT=Math.max(1.5,Math.min(4.5,zoomT-(d-pd)*.01));pd=d}},{passive:true});addEventListener('touchend',function(){pd=0});
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,ph=0,prev=0,acc=0,frames=0,hudT=0,cool=0,fps=60,pw=7;
+function frame(now){
+  var dt=Math.min(.1,(now-prev)/1000||.016);prev=now;
+  if(performance.now()-last>3500){m.x=.5+.4*Math.sin(now*.00012);m.y=.55+.12*Math.sin(now*.00017)}
+  s.x+=(m.x-s.x)*.05;s.y+=(m.y-s.y)*.05;zoom+=(zoomT-zoom)*.06;
+  ph+=dt*(pressed?4:1)*(reduce?.2:1);
+  pw=6.5+3.0*Math.sin(ph*.2);
+  var yaw=(s.x-.5)*6.283+now*.00005,pitch=Math.max(-1.2,Math.min(1.2,(s.y-.5)*2.4)),hue=s.y*.5+now*.00002+ph*.01;
+  gl.uniform2f(U.uRes,cw,ch);gl.uniform1f(U.uTime,now*.001);gl.uniform1f(U.uPow,pw);gl.uniform1f(U.uZoom,zoom*(1+.03*Math.sin(now*.0006)));gl.uniform1f(U.uHue,hue);gl.uniform2f(U.uCam,yaw,pitch);for(var kk=0;kk<3;kk++)cd[kk]+=(PD[pi][kk]-cd[kk])*.05;gl.uniform3f(U.uD,cd[0],cd[1],cd[2]);
+  gl.drawArrays(gl.TRIANGLES,0,3);
+  acc+=dt;frames++;cool--;
+  if(frames>=40){var ms=acc/frames*1000;fps=1000/ms;
+    if(ms>21&&q>.3){q*=.85;size();cool=60}else if(ms<17.4&&q<1&&cool<=0){q=Math.min(1,q*1.1);size();cool=60}
+    acc=0;frames=0}
+  if(now-hudT>400){hudT=now;hud.textContent='power   '+pw.toFixed(2)+'\nfps     '+Math.round(fps)+'\nrays    '+cw+' × '+ch+'  ('+(cw*ch/1e6).toFixed(2)+' M / '+LAB.t('кадр','frame')+')\nscale   '+Math.round(q*100)+'%  ('+LAB.t('подстраивается под вашу GPU','adapts to your GPU')+')'}
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+addEventListener('keydown',function(e){var k=e.key.toLowerCase();if(k==='h'||k==='р'){var u=document.querySelector('.ui');u.style.transition='opacity .4s';u.style.opacity=u.style.opacity==='0'?'1':'0'}if(k==='f'||k==='а'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}});
+})();
+</script>
+</body>
+</html>

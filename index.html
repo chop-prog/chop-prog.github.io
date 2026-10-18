@@ -28,6 +28,7 @@
     </a>
     <nav aria-label="Main">
       <a href="#projects" data-i18n="nav.projects">Projects</a>
+      <a href="#lab" data-i18n="nav.lab">Lab</a>
       <a href="#notes" data-i18n="nav.notes">Notes</a>
       <a href="#skills" data-i18n="nav.skills">Skills</a>
       <a href="#about" data-i18n="nav.about">About</a>
@@ -237,6 +238,51 @@
             <a class="btn" href="https://github.com/chop-prog/void-pulse" target="_blank" rel="noopener" data-i18n="code">Source code</a>
           </div>
         </article>
+      </div>
+    </section>
+
+    <section id="lab" class="section">
+      <header class="section-head reveal">
+        <h2 data-i18n="lab.title">Lab</h2>
+        <p data-i18n="lab.lead">Small visual experiments. Each one is a single HTML file with no libraries: open it and move the mouse.</p>
+      </header>
+      <div class="labs reveal">
+        <a class="lab-card" href="lab/mandelbulb/" style="--accent:#c4b5fd">
+          <img src="assets/lab-mandelbulb.jpg" width="800" height="500" alt="" loading="lazy" decoding="async">
+          <span class="lab-open" aria-hidden="true">↗</span>
+          <div class="lab-body">
+            <h3 data-i18n="lab.bulb.name">Mandelbulb</h3>
+            <span class="lab-desc" data-i18n="lab.bulb.desc">A 3D fractal ray-marched on the GPU every frame, with resolution that adapts to your graphics card</span>
+            <span class="lab-tech">WebGL · GLSL ray marching</span>
+          </div>
+        </a>
+        <a class="lab-card" href="lab/crystal/" style="--accent:#818cf8">
+          <img src="assets/lab-crystal.jpg" width="1200" height="750" alt="" loading="lazy" decoding="async">
+          <span class="lab-open" aria-hidden="true">↗</span>
+          <div class="lab-body">
+            <h3 data-i18n="lab.crystal.name">Crystal</h3>
+            <span class="lab-desc" data-i18n="lab.crystal.desc">The five Platonic solids in 3D with a glowing core, built on Canvas 2D with hand-written projection and lighting</span>
+            <span class="lab-tech">Canvas 2D · 3D math</span>
+          </div>
+        </a>
+        <a class="lab-card" href="lab/mountains/" style="--accent:#7dd3fc">
+          <img src="assets/lab-mountains.jpg" width="1200" height="750" alt="" loading="lazy" decoding="async">
+          <span class="lab-open" aria-hidden="true">↗</span>
+          <div class="lab-body">
+            <h3 data-i18n="lab.mount.name">Mountains</h3>
+            <span class="lab-desc" data-i18n="lab.mount.desc">A procedural landscape: move the mouse and a whole day passes, from dawn to a starry night</span>
+            <span class="lab-tech">Canvas 2D · procedural</span>
+          </div>
+        </a>
+        <a class="lab-card" href="lab/wallpaper/" style="--accent:#f472b6">
+          <img src="assets/lab-wallpaper.jpg" width="1200" height="750" alt="" loading="lazy" decoding="async">
+          <span class="lab-open" aria-hidden="true">↗</span>
+          <div class="lab-body">
+            <h3 data-i18n="lab.wall.name">Live wallpaper</h3>
+            <span class="lab-desc" data-i18n="lab.wall.desc">Four colour moods blended by the cursor, parallax stars and waves of light on click</span>
+            <span class="lab-tech">Canvas 2D · parallax</span>
+          </div>
+        </a>
       </div>
     </section>
 

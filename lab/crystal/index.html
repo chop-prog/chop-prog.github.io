@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Кристалл</title>
+<meta name="description" content="Crystal: the Platonic solids rendered in 3D on Canvas 2D, with glowing cores and depth-sorted faces.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2307080d'/%3E%3Cpath d='M9 11l-4 5 4 5M23 11l4 5-4 5M18 8l-4 16' fill='none' stroke='%237cf5d0' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script src="../lab.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;500&display=swap" rel="stylesheet">
+<style>
+:root{--h:260;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0;overflow:hidden;background:#06060b;color:#fff;font-family:'Rubik',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:pointer}
+.ui{position:fixed;left:0;right:0;bottom:0;padding:0 clamp(20px,4vw,56px) calc(clamp(20px,4vw,44px) + env(safe-area-inset-bottom,0px));pointer-events:none}
+h1{margin:0;font-weight:500;font-size:clamp(40px,8vw,104px);letter-spacing:-.04em;line-height:1;transition:opacity .3s;background:linear-gradient(90deg,hsl(var(--h),95%,78%),hsl(calc(var(--h) + 70),95%,68%));-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
+.hint{font-weight:300;font-size:clamp(13px,1.4vw,16px);color:rgba(255,255,255,.6);margin-top:12px;max-width:46ch}
+</style>
+</head>
+<body data-title-en="Crystal">
+<canvas id="c"></canvas>
+<div class="ui">
+  <h1 id="name" data-en="Icosahedron">Икосаэдр</h1>
+  <div class="hint" data-en="Move the mouse to turn the crystal and shift its colours. A fast flick spins it. Click for another shape. H hides the text, F goes full screen.">Ведите мышью — кристалл вращается и переливается. Быстрое движение раскручивает его. Нажмите — другая форма. H — скрыть текст, F — во весь экран.</div>
+</div>
+<script>
+(function(){
+var cv=document.getElementById('c'),ctx=cv.getContext('2d'),W,H,D,root=document.documentElement;
+function size(){D=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*D;cv.height=H*D;ctx.setTransform(D,0,0,D,0,0)}
+addEventListener('resize',size);size();
+function norm(v){var l=Math.hypot(v[0],v[1],v[2]);return[v[0]/l,v[1]/l,v[2]/l]}
+function shape(n,v,f){return{n:n,v:v.map(norm),f:f}}
+var phi=(1+Math.sqrt(5))/2,iv=[];
+[-1,1].forEach(function(a){[-1,1].forEach(function(b){iv.push([0,a,b*phi],[a,b*phi,0],[b*phi,0,a])})});
+var iff=[];
+for(var a=0;a<12;a++)for(var b=a+1;b<12;b++)for(var c=b+1;c<12;c++){
+  var d=function(p,q){return Math.hypot(iv[p][0]-iv[q][0],iv[p][1]-iv[q][1],iv[p][2]-iv[q][2])};
+  if(Math.abs(d(a,b)-2)<.01&&Math.abs(d(b,c)-2)<.01&&Math.abs(d(a,c)-2)<.01)iff.push([a,b,c]);
+}
+var S=[
+ shape(LAB.t('Икосаэдр','Icosahedron'),iv,iff),
+ shape(LAB.t('Куб','Cube'),[[-1,-1,-1],[1,-1,-1],[-1,1,-1],[1,1,-1],[-1,-1,1],[1,-1,1],[-1,1,1],[1,1,1]],[[0,2,3,1],[4,5,7,6],[0,4,6,2],[1,3,7,5],[0,1,5,4],[2,6,7,3]]),
+ shape(LAB.t('Октаэдр','Octahedron'),[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]],[[0,2,4],[0,2,5],[0,3,4],[0,3,5],[1,2,4],[1,2,5],[1,3,4],[1,3,5]]),
+ shape(LAB.t('Тетраэдр','Tetrahedron'),[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]],[[0,1,2],[0,3,1],[0,2,3],[1,3,2]])
+];
+var dc=iff.map(function(f){return[iv[f[0]][0]+iv[f[1]][0]+iv[f[2]][0],iv[f[0]][1]+iv[f[1]][1]+iv[f[2]][1],iv[f[0]][2]+iv[f[1]][2]+iv[f[2]][2]]}),df=[];
+for(var i=0;i<12;i++){var v=norm(iv[i]),ls=[];iff.forEach(function(f,k){if(f.indexOf(i)>=0)ls.push(k)});
+ var c0=norm(dc[ls[0]]),dp=c0[0]*v[0]+c0[1]*v[1]+c0[2]*v[2],u=norm([c0[0]-dp*v[0],c0[1]-dp*v[1],c0[2]-dp*v[2]]),w=[v[1]*u[2]-v[2]*u[1],v[2]*u[0]-v[0]*u[2],v[0]*u[1]-v[1]*u[0]];
+ ls.sort(function(p,q){var a=norm(dc[p]),b=norm(dc[q]);return Math.atan2(a[0]*w[0]+a[1]*w[1]+a[2]*w[2],a[0]*u[0]+a[1]*u[1]+a[2]*u[2])-Math.atan2(b[0]*w[0]+b[1]*w[1]+b[2]*w[2],b[0]*u[0]+b[1]*u[1]+b[2]*u[2])});
+ df.push(ls)}
+S.splice(1,0,shape(LAB.t('Додекаэдр','Dodecahedron'),dc,df));
+var cur=0,pop=1,nameEl=document.getElementById('name');
+function next(){cur=(cur+1)%S.length;pop=.5;nameEl.style.opacity=0;setTimeout(function(){nameEl.textContent=S[cur].n;nameEl.style.opacity=1},150)}
+var m={x:.5,y:.5},s={x:.5,y:.5},last=0,down=null,px=.5,py=.5,ex=0,ey=0;
+function pm(e){var t=e.touches?e.touches[0]:e;m.x=t.clientX/W;m.y=t.clientY/H;last=performance.now()}
+addEventListener('pointermove',pm);addEventListener('touchmove',pm,{passive:true});
+cv.addEventListener('pointerdown',function(e){down=[e.clientX,e.clientY]});
+cv.addEventListener('pointerup',function(e){if(down&&Math.hypot(e.clientX-down[0],e.clientY-down[1])<8)next();down=null});
+var dust=[];for(var i=0;i<130;i++)dust.push({x:Math.random()*2-1,y:Math.random()*2-1,z:Math.random(),r:Math.random()*1.6+.4,p:Math.random()*6});
+function rot(v,rx,ry){var c=Math.cos(ry),s=Math.sin(ry),x=v[0]*c+v[2]*s,z=-v[0]*s+v[2]*c,y=v[1];c=Math.cos(rx);s=Math.sin(rx);return[x,y*c-z*s,y*s+z*c]}
+function proj(p,R){var k=4/(4-p[2]);return[W/2+p[0]*R*k,H/2-p[1]*R*k,p[2]]}
+var L=norm([-.45,.65,.65]);
+function path(F,pv){ctx.beginPath();F.forEach(function(i,k){var p=pv[i];k?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])});ctx.closePath()}
+function frame(t){
+  if(performance.now()-last>3000){m.x=.5+.45*Math.sin(t*.0003);m.y=.5+.3*Math.cos(t*.00022)}
+  s.x+=(m.x-s.x)*.06;s.y+=(m.y-s.y)*.06;
+  var vx=s.x-px,vy=s.y-py;px=s.x;py=s.y;ex+=vx*9;ey+=vy*6;ex*=.97;ey*=.97;pop+=(1-pop)*.09;
+  var ry=(s.x-.5)*Math.PI*3.2+ex+t*.00012,rx=(s.y-.5)*Math.PI*1.6+ey,hue=s.x*320+s.y*70+t*.006;
+  root.style.setProperty('--h',hue%360);
+  var R=Math.min(W,H)*.27*pop*(1+.04*Math.sin(t*.0014));
+  var bg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*.75);
+  bg.addColorStop(0,'hsl('+hue+',70%,22%)');bg.addColorStop(.5,'hsl('+(hue+40)+',60%,8%)');bg.addColorStop(1,'#05050a');
+  ctx.globalCompositeOperation='source-over';ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  // dust
+  ctx.globalCompositeOperation='lighter';
+  dust.forEach(function(q){q.y+=.0006*(q.z+.3);if(q.y>1.1)q.y=-1.1;
+    var X=W/2+(q.x*W*.6)-(s.x-.5)*q.z*90,Y=H/2-q.y*H*.55-(s.y-.5)*q.z*60,a=(.2+.5*q.z)*(.6+.4*Math.sin(t*.002+q.p));
+    ctx.fillStyle='hsla('+(hue+30)+',90%,80%,'+a+')';ctx.beginPath();ctx.arc(X,Y,q.r*(.5+q.z),0,6.283);ctx.fill()});
+  // ground shadow
+  ctx.save();ctx.translate(W/2,H/2+R*1.55);ctx.scale(1,.2);
+  var sg=ctx.createRadialGradient(0,0,0,0,0,R*1.5);sg.addColorStop(0,'hsla('+hue+',90%,55%,.45)');sg.addColorStop(1,'hsla('+hue+',90%,55%,0)');
+  ctx.fillStyle=sg;ctx.beginPath();ctx.arc(0,0,R*1.5,0,6.283);ctx.fill();ctx.restore();
+  // halo
+  var hg=ctx.createRadialGradient(W/2,H/2,R*.3,W/2,H/2,R*2.3);hg.addColorStop(0,'hsla('+(hue+20)+',100%,60%,.28)');hg.addColorStop(1,'hsla('+hue+',100%,60%,0)');
+  ctx.fillStyle=hg;ctx.fillRect(0,0,W,H);
+  ctx.globalCompositeOperation='source-over';
+  var sh=S[cur];
+  // outer wireframe
+  var P2=sh.v.map(function(v){return proj(rot([v[0]*1.6,v[1]*1.6,v[2]*1.6],-rx*.6,-ry*.6+t*.0002),R)});
+  ctx.strokeStyle='hsla('+(hue+120)+',90%,78%,.22)';ctx.lineWidth=1;
+  sh.f.forEach(function(f){path(f,P2);ctx.stroke()});
+  // faces
+  var rv=sh.v.map(function(v){return rot(v,rx,ry)}),pv=rv.map(function(v){return proj(v,R)});
+  var faces=sh.f.map(function(f,idx){
+    var a=rv[f[0]],b=rv[f[1]],c=rv[f[2]],u=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],w=[c[0]-a[0],c[1]-a[1],c[2]-a[2]];
+    var n=[u[1]*w[2]-u[2]*w[1],u[2]*w[0]-u[0]*w[2],u[0]*w[1]-u[1]*w[0]],cen=[0,0,0];
+    f.forEach(function(i){cen[0]+=rv[i][0];cen[1]+=rv[i][1];cen[2]+=rv[i][2]});cen=cen.map(function(q){return q/f.length});
+    if(n[0]*cen[0]+n[1]*cen[1]+n[2]*cen[2]<0)n=[-n[0],-n[1],-n[2]];
+    return{f:f,n:norm(n),z:cen[2],idx:idx};
+  }).sort(function(a,b){return a.z-b.z});
+  faces.forEach(function(F){if(F.n[2]>0)return;
+    var lam=Math.max(0,F.n[0]*L[0]+F.n[1]*L[1]+F.n[2]*L[2]);
+    path(F.f,pv);ctx.fillStyle='hsla('+(hue+F.n[1]*55+F.idx*7)+',80%,'+(14+14*lam)+'%,.4)';ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;ctx.stroke()});
+  // glowing core
+  var cv2=sh.v.map(function(v){return proj(rot([v[0]*.5,v[1]*.5,v[2]*.5],-rx*1.4-t*.0005,-ry*1.4+t*.0007),R)});
+  ctx.globalCompositeOperation='lighter';
+  sh.f.forEach(function(f,i){path(f,cv2);ctx.fillStyle='hsla('+(hue+150+i*9)+',100%,55%,.32)';ctx.fill();ctx.strokeStyle='hsla('+(hue+150)+',100%,80%,.9)';ctx.lineWidth=1.2;ctx.shadowColor='hsl('+(hue+150)+',100%,65%)';ctx.shadowBlur=14;ctx.stroke();ctx.shadowBlur=0});
+  ctx.globalCompositeOperation='source-over';
+  // front faces
+  faces.forEach(function(F){if(F.n[2]<=0)return;
+    var lam=Math.max(0,F.n[0]*L[0]+F.n[1]*L[1]+F.n[2]*L[2]),h=hue+F.n[1]*55+F.idx*7;
+    path(F.f,pv);ctx.fillStyle='hsla('+h+',85%,'+(24+44*lam)+'%,.6)';ctx.fill();
+    var sp=Math.pow(lam,7)*.55;if(sp>.02){ctx.fillStyle='rgba(255,255,255,'+sp+')';ctx.fill()}
+    ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=1.5;ctx.shadowColor='hsl('+h+',100%,70%)';ctx.shadowBlur=16;ctx.stroke();ctx.shadowBlur=0});
+  // vertex sparks
+  ctx.globalCompositeOperation='lighter';
+  pv.forEach(function(p,i){if(rv[i][2]<-.2)return;var g=ctx.createRadialGradient(p[0],p[1],0,p[0],p[1],14);g.addColorStop(0,'rgba(255,255,255,.95)');g.addColorStop(.3,'hsla('+hue+',100%,75%,.5)');g.addColorStop(1,'hsla('+hue+',100%,70%,0)');ctx.fillStyle=g;ctx.fillRect(p[0]-14,p[1]-14,28,28)});
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+addEventListener('keydown',function(e){var k=e.key.toLowerCase();if(k==='h'||k==='р'){var u=document.querySelector('.ui');u.style.transition='opacity .4s';u.style.opacity=u.style.opacity==='0'?'1':'0'}if(k==='f'||k==='а'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}});
+})();
+</script>
+</body>
+</html>
