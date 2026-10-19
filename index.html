@@ -28,6 +28,7 @@
     </a>
     <nav aria-label="Main">
       <a href="#projects" data-i18n="nav.projects">Projects</a>
+      <a href="#case" data-i18n="nav.case">Case study</a>
       <a href="#lab" data-i18n="nav.lab">Lab</a>
       <a href="#notes" data-i18n="nav.notes">Notes</a>
       <a href="#skills" data-i18n="nav.skills">Skills</a>
@@ -56,7 +57,7 @@
       </div>
       <dl class="stats reveal">
         <div><dt data-count="8">8</dt><dd data-i18n="stats.projects">shipped projects</dd></div>
-        <div><dt data-count="221">221</dt><dd data-i18n="stats.tests">automated tests</dd></div>
+        <div><dt data-count="224">224</dt><dd data-i18n="stats.tests">automated tests</dd></div>
         <div><dt data-count="0">0</dt><dd data-i18n="stats.deps">runtime dependencies in the game and the simulation</dd></div>
         <div><dt data-count="4">4</dt><dd data-i18n="stats.langs">languages: TS, JS, SQL, GLSL</dd></div>
       </dl>
@@ -241,6 +242,36 @@
       </div>
     </section>
 
+    <section id="case" class="section">
+      <header class="section-head reveal">
+        <h2 data-i18n="case.title">Case study: one bug, start to finish</h2>
+        <p data-i18n="case.lead">How a vague report becomes a root cause, a fix and a test that keeps it fixed. Both issues below are real and came from playtests of VOID PULSE co-op.</p>
+      </header>
+      <div class="case">
+        <ol class="case-steps reveal">
+          <li><h3 data-i18n="case.s1.t">Symptom</h3><p data-i18n="case.s1.b">Joining a friend by link looped on “could not connect”, and joining by code took a very long time.</p></li>
+          <li><h3 data-i18n="case.s2.t">Reproduce</h3><p data-i18n="case.s2.b">Two machines, a network that blocks direct peer-to-peer traffic, and logs of every signalling step on both sides.</p></li>
+          <li><h3 data-i18n="case.s3.t">Root cause</h3><p data-i18n="case.s3.b">Two at once: the free signalling server was not delivering messages, and the friend's browser served an old cached build that spoke a different protocol.</p></li>
+          <li><h3 data-i18n="case.s4.t">Fix</h3><p data-i18n="case.s4.b">Encrypted signalling over three public MQTT brokers with a relay fallback, a network-first service worker, a protocol version check in the handshake and the build number in the lobby.</p></li>
+          <li><h3 data-i18n="case.s5.t">Keep it fixed</h3><p data-i18n="case.s5.b">Tests run co-op over a simulated network with latency, jitter and blocked peer-to-peer. Connecting now takes about 2.5 s directly and about 9 s through the relay.</p></li>
+        </ol>
+        <article class="ticket reveal" aria-labelledby="ticket-title">
+          <p class="ticket-head"><span data-i18n="case.bug.kind">Bug report</span><span class="ticket-status" data-i18n="case.bug.status">Fixed in build 7</span></p>
+          <h3 id="ticket-title" data-i18n="case.bug.title">The second player's screen stutters in online co-op</h3>
+          <dl>
+            <dt data-i18n="case.bug.env.k">Environment</dt><dd data-i18n="case.bug.env.v">Chrome on two PCs, direct WebRTC link</dd>
+            <dt data-i18n="case.bug.sev.k">Severity</dt><dd data-i18n="case.bug.sev.v">Major: co-op is barely playable for the guest</dd>
+            <dt data-i18n="case.bug.steps.k">Steps</dt><dd data-i18n="case.bug.steps.v">1. The host opens a room, the guest joins by link. 2. Start a run and kill several enemies in a row. 3. Watch the enemies on the guest's screen.</dd>
+            <dt data-i18n="case.bug.exp.k">Expected</dt><dd data-i18n="case.bug.exp.v">Enemies move smoothly, as they do for the host.</dd>
+            <dt data-i18n="case.bug.act.k">Actual</dt><dd data-i18n="case.bug.act.v">On the guest's screen enemies freeze for several frames, then jump ahead.</dd>
+            <dt data-i18n="case.bug.cause.k">Cause</dt><dd data-i18n="case.bug.cause.v">The guest's playback followed game time, which the host slows down for a moment on every kill.</dd>
+            <dt data-i18n="case.bug.fix.k">Fix</dt><dd data-i18n="case.bug.fix.v">Snapshots carry a steady clock; the guest plays at real speed and corrects drift by up to 15%. A test checks the pace stays within 0.8–1.2× on a jittery network.</dd>
+          </dl>
+          <a class="ticket-link" href="https://github.com/chop-prog/void-pulse/blob/main/tests/coop.test.js" target="_blank" rel="noopener">coop.test.js ↗</a>
+        </article>
+      </div>
+    </section>
+
     <section id="lab" class="section">
       <header class="section-head reveal">
         <h2 data-i18n="lab.title">Lab</h2>
@@ -390,14 +421,15 @@ prefixSum(counts);
       <h2 class="reveal" data-i18n="about.title">How I work</h2>
       <div class="about-text">
         <p class="reveal" data-i18n="about.p1">I care about the parts of an interface users feel without noticing: responses that don't lag, keyboard shortcuts that just work, motion that helps instead of distracting, and states that never lose your work.</p>
-        <p class="reveal" data-i18n="about.p2">I like knowing how things work under the hood, so I don't mind writing a physics loop or a shader by hand. I also know when a good library is the right call: Flowboard uses React and dnd-kit for exactly that reason.</p>
+        <p class="reveal" data-i18n="about.p2">I like knowing how things work under the hood, so these projects implement their own physics, shaders and sync engines instead of hiding them behind libraries. I also know when a good library is the right call: Flowboard uses React and dnd-kit for exactly that reason.</p>
         <p class="reveal" data-i18n="about.p3">Every project here has automated tests, a README that explains the decisions, and a CI pipeline that deploys on every push.</p>
+        <p class="reveal" data-i18n="about.p4">I build with AI assistants, mainly Claude Code. I write the task and what “done” means, read and review the code it produces, test it in the browser and with automated tests, and send it back until it is right. The AI speeds up the typing; deciding what to build and proving that it works is my part.</p>
       </div>
     </section>
 
     <section id="contact" class="section contact reveal">
       <h2 data-i18n="contact.title">Let's build something.</h2>
-      <p data-i18n="contact.lead">I'm open to frontend developer roles. The fastest way to reach me is Telegram.</p>
+      <p data-i18n="contact.lead">I'm open to junior roles and internships in frontend, QA and AI automation, in Moscow or remote. The fastest way to reach me is Telegram.</p>
       <div class="contact-links">
         <a class="btn primary big" href="https://t.me/chunua4" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.2 13l-4.8-1.5c-1-.3-1.1-1 .2-1.5L20.5 2.7c.9-.3 1.6.2 1.4 1.6z"/></svg>

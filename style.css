@@ -83,7 +83,10 @@ body::after {
   font: 500 12px var(--mono);
 }
 .nav nav { display: flex; gap: 4px; margin-left: auto; }
-.nav nav a { padding: 6px 12px; border-radius: 99px; color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500; transition: color 0.2s, background 0.2s; }
+.nav nav a { padding: 6px 12px; border-radius: 99px; color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500; white-space: nowrap; transition: color 0.2s, background 0.2s; }
+.nav .logo { white-space: nowrap; }
+@media (max-width: 1080px) { .nav nav { gap: 0; } .nav nav a { padding: 6px 8px; font-size: 14px; } }
+@media (max-width: 920px) { .nav nav { display: none; } .nav .lang { margin-left: auto; } }
 .nav nav a:hover, .nav nav a.active { color: var(--text); background: rgba(255, 255, 255, 0.06); }
 .lang { display: flex; padding: 3px; border: 1px solid var(--border); border-radius: 99px; }
 .lang button { padding: 4px 10px; border: 0; border-radius: 99px; background: transparent; color: var(--muted); font: 600 12px var(--sans); cursor: pointer; }
@@ -378,6 +381,50 @@ html[lang='ru'] .hero h1 { max-width: 22ch; font-size: clamp(34px, 4.4vw, 60px);
 .note-card .n { color: #f78c6c; }
 .note-card .c { color: #6b7394; font-style: italic; }
 @media (max-width: 900px) { .notes { grid-template-columns: 1fr; } }
+
+/* ── Case study: debugging timeline + bug report ─────────────────────────── */
+.case { display: grid; grid-template-columns: 1fr 1.1fr; gap: 28px; align-items: start; }
+.case-steps { margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.case-steps li { position: relative; padding: 0 0 26px 52px; counter-increment: step; }
+.case-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(124, 245, 208, 0.45);
+  border-radius: 50%;
+  background: rgba(124, 245, 208, 0.08);
+  font: 500 14px var(--mono);
+  color: var(--mint);
+}
+.case-steps li::after { content: ''; position: absolute; left: 17px; top: 38px; bottom: 4px; width: 1px; background: var(--border); }
+.case-steps li:last-child { padding-bottom: 0; }
+.case-steps li:last-child::after { display: none; }
+.case-steps h3 { margin: 4px 0 4px; font-size: 18px; letter-spacing: -0.01em; }
+.case-steps p { margin: 0; color: #c4c9db; font-size: 15.5px; }
+.ticket {
+  padding: 22px 24px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--pink);
+  border-radius: 18px;
+  background: var(--surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.ticket-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin: 0 0 10px; font: 500 12.5px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.ticket-status { padding: 2px 10px; border-radius: 999px; background: rgba(124, 245, 208, 0.12); color: var(--mint); text-transform: none; letter-spacing: 0; }
+.ticket h3 { margin: 0 0 16px; font-size: 21px; letter-spacing: -0.015em; }
+.ticket dl { display: grid; grid-template-columns: max-content 1fr; gap: 10px 18px; margin: 0; font-size: 15px; }
+.ticket dt { color: var(--muted); font-weight: 500; }
+.ticket dd { margin: 0; color: #c4c9db; }
+.ticket-link { display: inline-block; margin-top: 18px; font: 500 13px var(--mono); color: var(--indigo); text-decoration: none; }
+.ticket-link:hover { text-decoration: underline; }
+@media (max-width: 900px) { .case { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .ticket dl { grid-template-columns: 1fr; gap: 2px; } .ticket dd { margin-bottom: 10px; } }
 /* ── Effects (progressive enhancement; see src/effects.js) ───────────────── */
 @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
 
