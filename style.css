@@ -255,6 +255,15 @@ html[lang='ru'] .hero h1 { max-width: 22ch; font-size: clamp(34px, 4.4vw, 60px);
 .mini h4 { margin: 0 6px 8px; font-size: 22px; font-weight: 700; letter-spacing: -0.015em; }
 .mini > p:not(.tag):not(.tech) { flex: 1; margin: 0 6px 14px; font-size: 15px; color: #c4c9db; }
 .mini .tech { margin: 0 6px 16px !important; }
+/* A fifth card spans the row: picture on the left, text on the right. */
+.mini.wide { grid-column: 1 / -1; display: grid; grid-template-columns: 1.15fr 1fr; column-gap: 26px; align-content: center; }
+.mini.wide .shot { grid-column: 1; grid-row: 1 / span 5; margin-bottom: 0; align-self: center; }
+.mini.wide > :not(.shot) { grid-column: 2; }
+.mini.wide > p:not(.tag):not(.tech) { flex: none; }
+@media (max-width: 900px) {
+  .mini.wide { display: flex; }
+  .mini.wide .shot { margin-bottom: 18px; }
+}
 .mini .links { margin: 0 6px; }
 
 .skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
