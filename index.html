@@ -28,6 +28,7 @@
     </a>
     <nav aria-label="Main">
       <a href="#projects" data-i18n="nav.projects">Projects</a>
+      <a href="#live" data-i18n="nav.live">Live</a>
       <a href="#case" data-i18n="nav.case">Case study</a>
       <a href="#lab" data-i18n="nav.lab">Lab</a>
       <a href="#notes" data-i18n="nav.notes">Notes</a>
@@ -284,6 +285,17 @@
       </div>
     </section>
 
+    <section id="live" class="section">
+      <header class="section-head reveal">
+        <h2 data-i18n="live.title">Live from GitHub</h2>
+        <p data-i18n="live.lead">This board is not a screenshot. When you open it, the page asks the GitHub API for the latest CI run of every project: green means the tests passed on the last push. Click a row to open the run.</p>
+      </header>
+      <div class="live reveal">
+        <p class="live-summary" aria-live="polite" data-i18n="live.loading">Asking GitHub…</p>
+        <div class="live-list"></div>
+      </div>
+    </section>
+
     <section id="case" class="section">
       <header class="section-head reveal">
         <h2 data-i18n="case.title">Case study: one bug, start to finish</h2>
@@ -472,6 +484,12 @@ prefixSum(counts);
     <section id="contact" class="section contact reveal">
       <h2 data-i18n="contact.title">Let's build something.</h2>
       <p data-i18n="contact.lead">I'm open to junior roles and internships in frontend, QA and AI automation, in Moscow or remote. The fastest way to reach me is Telegram.</p>
+      <dl class="facts">
+        <div><dt data-i18n="hire.format.k">Format</dt><dd data-i18n="hire.format.v">Remote, or hybrid in Moscow and the region</dd></div>
+        <div><dt data-i18n="hire.hours.k">Hours</dt><dd data-i18n="hire.hours.v">20–25 a week, evenings and weekends: I study full-time at college</dd></div>
+        <div><dt data-i18n="hire.start.k">Start</dt><dd data-i18n="hire.start.v">Right away</dd></div>
+        <div><dt data-i18n="hire.next.k">First step</dt><dd data-i18n="hire.next.v">Send me a test task: I'll do it and walk you through the result</dd></div>
+      </dl>
       <div class="contact-links">
         <a class="btn primary big" href="https://t.me/chunua4" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.2 13l-4.8-1.5c-1-.3-1.1-1 .2-1.5L20.5 2.7c.9-.3 1.6.2 1.4 1.6z"/></svg>

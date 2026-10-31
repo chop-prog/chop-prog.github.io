@@ -1,6 +1,7 @@
 import { STRINGS, detectLang } from './i18n.js';
 import { initEffects, splitWords } from './effects.js';
 import { initPlayground } from './playground.js';
+import { initLive } from './live.js';
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Reveal animations only hide content once we know JS is running.
@@ -19,6 +20,7 @@ function setLang(lang) {
   for (const b of document.querySelectorAll('[data-lang]')) b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
   try { localStorage.setItem('lang', lang); } catch { /* ignore */ }
   splitWords(document.querySelector('.hero h1'));
+  document.dispatchEvent(new Event('langchange'));
 }
 
 let saved = null;
@@ -167,6 +169,9 @@ if (reduced) {
 }
 
 initEffects();
+
+const live = document.querySelector('.live');
+if (live) initLive(live);
 
 const playground = document.querySelector('.playground');
 if (playground) initPlayground(playground, { reduced });
