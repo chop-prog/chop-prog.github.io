@@ -36,6 +36,7 @@
       <a href="#about" data-i18n="nav.about">About</a>
       <a href="#contact" data-i18n="nav.contact">Contact</a>
     </nav>
+    <button class="kbar" type="button" data-palette aria-label="Search the site" data-i18n-aria-label="kbar.label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 0 1 5.9 12.1l4.3 4.3-1.4 1.4-4.3-4.3A7.5 7.5 0 1 1 10.5 3zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z"/></svg><kbd>Ctrl K</kbd></button>
     <div class="lang" role="group" aria-label="Language">
       <button data-lang="en" aria-pressed="true">EN</button>
       <button data-lang="ru" aria-pressed="false">RU</button>
@@ -368,6 +369,24 @@
             <span class="lab-tech">Canvas 2D · parallax</span>
           </div>
         </a>
+        <a class="lab-card" href="lab/flock/" style="--accent:#7cf5d0">
+          <img src="assets/lab-flock.jpg" width="1200" height="750" alt="" loading="lazy" decoding="async">
+          <span class="lab-open" aria-hidden="true">↗</span>
+          <div class="lab-body">
+            <h3 data-i18n="lab.flock.name">Flock</h3>
+            <span class="lab-desc" data-i18n="lab.flock.desc">Up to a thousand birds, three local rules, no leader. The cursor scatters them; hold the button and they gather around it</span>
+            <span class="lab-tech">Canvas 2D · boids · spatial grid</span>
+          </div>
+        </a>
+        <a class="lab-card" href="lab/attractor/" style="--accent:#a5b4fc">
+          <img src="assets/lab-attractor.jpg" width="1200" height="750" alt="" loading="lazy" decoding="async">
+          <span class="lab-open" aria-hidden="true">↗</span>
+          <div class="lab-body">
+            <h3 data-i18n="lab.attr.name">Strange attractors</h3>
+            <span class="lab-desc" data-i18n="lab.attr.desc">Thousands of particles following four chaotic systems in 3D, from the Lorenz butterfly to Halvorsen, integrated with RK4</span>
+            <span class="lab-tech">Canvas 2D · RK4 · 3D projection</span>
+          </div>
+        </a>
       </div>
     </section>
 
@@ -496,14 +515,16 @@ prefixSum(counts);
           Telegram <span class="handle">@chunua4</span>
         </a>
         <a class="btn big" href="https://github.com/chop-prog" target="_blank" rel="noopener" data-i18n="contact.cta">Open my GitHub</a>
+        <button class="btn big" type="button" data-copy data-i18n="contact.copy">Copy @chunua4</button>
       </div>
+      <p class="contact-tip" data-i18n="contact.tip">Tip: press Ctrl+K to jump anywhere on this page, or simply type “hire”.</p>
       <p class="location"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12zm0-9.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg><span data-i18n="contact.location">Moscow, Russia</span></p>
     </section>
   </main>
 
   <footer class="footer">
     <span>© 2026 chop-prog</span>
-    <span data-i18n="footer.made">Hand-built: plain HTML, CSS and JavaScript, no frameworks.</span>
+    <span data-i18n="footer.made">Hand-built: plain HTML, CSS and JavaScript. Not a single node_modules in production.</span>
   </footer>
 
   <script type="module" src="src/main.js"></script>

@@ -27,6 +27,8 @@ Small visual experiments, each a single HTML file with no libraries, served from
 | [Crystal](https://chop-prog.github.io/lab/crystal/) | the five Platonic solids in 3D on Canvas 2D: hand-written projection, depth sorting and lighting |
 | [Mountains](https://chop-prog.github.io/lab/mountains/) | procedural layered landscape that runs from dawn to night under the cursor |
 | [Live wallpaper](https://chop-prog.github.io/lab/wallpaper/) | four colour moods blended by the cursor, parallax stars and click ripples |
+| [Flock](https://chop-prog.github.io/lab/flock/) | up to a thousand boids on three local rules, with neighbours found through a uniform grid; the cursor scatters them, holding the button gathers them |
+| [Strange attractors](https://chop-prog.github.io/lab/attractor/) | Lorenz, Aizawa, Thomas and Halvorsen systems integrated with RK4 and projected to 3D, thousands of particles at once |
 
 [`lab/lab.js`](lab/lab.js) gives them the portfolio's language choice (EN/RU) and a link back.
 
@@ -35,6 +37,9 @@ Small visual experiments, each a single HTML file with no libraries, served from
 - Plain HTML, CSS and ES modules, with no framework and no build step.
 - **Bilingual (EN/RU).** The HTML ships in English so it works without JavaScript and is easy for crawlers to read. The language is picked from the browser, can be switched, and the choice is remembered. A test checks that both dictionaries stay in sync with the markup.
 - **Particle playground.** Type anything and ~16,000 particles assemble into it. The text is rasterised to an offscreen canvas and sampled into targets; each particle is a damped spring with a pointer force field and click shockwaves ([`src/swarm.js`](src/swarm.js), pure and unit-tested). WebGL2 draws the whole swarm in one call with additive blending and motion trails, with a Canvas 2D fallback. The loop runs only while the panel is visible; under `prefers-reduced-motion` the shape is drawn once, without animation.
+- **Live CI board.** When the section scrolls into view, the page asks the GitHub API for the latest workflow run of every project and shows which builds pass ([`src/live.js`](src/live.js)). Results are cached for the session to stay under the 60-requests-an-hour limit.
+- **Command palette.** `Ctrl+K` (`⌘K`) or `/` opens a fuzzy search over every section, project and lab demo, plus actions such as copying the Telegram handle or switching the language ([`src/palette.js`](src/palette.js), with a keyboard-navigable listbox and unit-tested ranking).
+- **Small touches** ([`src/delight.js`](src/delight.js)): type “hire” (or «нанять») anywhere and the page takes you to the contacts with a burst of green checkmarks; the case study timeline lights up as you scroll; the tab title changes when you look away; DevTools has a note for whoever opens it; and there is a [404 page](404.html).
 - **Animated flow-field background.** It is rendered at half resolution, pauses when the tab is hidden, and is static under `prefers-reduced-motion`.
 - **Progressive enhancement.** The reveal animations hide content only once JavaScript is running.
 - **Accessibility:** a skip link, visible focus states, `aria-pressed` on the language toggle, and semantic sections.

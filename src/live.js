@@ -125,8 +125,9 @@ export function initLive(root) {
     const o = overall(items);
     summary.textContent = t.summary(o.ok, o.total, o.latest ? relTime(o.latest, now, lang) : '—');
     summary.dataset.state = o.ok === o.total ? 'pass' : 'fail';
-    list.replaceChildren(...items.map((i) => {
+    list.replaceChildren(...items.map((i, n) => {
       const row = el(i.url ? 'a' : 'div', `live-row ${i.state}`);
+      row.style.setProperty('--i', String(n));
       if (i.url) { row.href = i.url; row.target = '_blank'; row.rel = 'noopener'; }
       const head = el('span', 'live-head');
       head.append(el('span', 'live-dot'), el('span', 'live-name', i.repo), el('span', 'live-state', t[i.state]));

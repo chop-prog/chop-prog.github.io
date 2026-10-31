@@ -17,8 +17,8 @@ test('the Pages deploy copies everything the page links to', () => {
   for (const top of new Set(refs)) assert.ok(copied.includes(top), `"${top}" is linked from index.html but not deployed`);
 });
 
-test('the lab section links four demos', () => {
-  assert.equal(cards.length, 4);
+test('the lab section links six demos', () => {
+  assert.equal(cards.length, 6);
 });
 
 test('every lab demo exists, loads the shared script and has English text', () => {

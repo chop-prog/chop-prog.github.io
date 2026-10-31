@@ -2,6 +2,8 @@ import { STRINGS, detectLang } from './i18n.js';
 import { initEffects, splitWords } from './effects.js';
 import { initPlayground } from './playground.js';
 import { initLive } from './live.js';
+import { initPalette } from './palette.js';
+import { copyHandle, hire, initDelight } from './delight.js';
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Reveal animations only hide content once we know JS is running.
@@ -172,6 +174,15 @@ initEffects();
 
 const live = document.querySelector('.live');
 if (live) initLive(live);
+
+initDelight();
+initPalette({
+  hire,
+  copy: () => copyHandle(document.querySelector('[data-copy]')),
+  toggleLang: () => setLang(document.documentElement.lang === 'ru' ? 'en' : 'ru'),
+});
+// The shortcut hint matches the platform.
+if (/Mac|iPhone|iPad/.test(navigator.platform)) for (const k of document.querySelectorAll('.kbar kbd')) k.textContent = '⌘K';
 
 const playground = document.querySelector('.playground');
 if (playground) initPlayground(playground, { reduced });

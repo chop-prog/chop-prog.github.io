@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Странный аттрактор</title>
+<meta name="description" content="Strange attractors: thousands of particles following the Lorenz, Aizawa, Thomas and Halvorsen equations in 3D.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2307080d'/%3E%3Cpath d='M9 11l-4 5 4 5M23 11l4 5-4 5M18 8l-4 16' fill='none' stroke='%237cf5d0' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script src="../lab.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;background:#04050a;color:#eceef6;font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.ui{position:fixed;left:0;top:0;padding:calc(clamp(20px,4vw,48px) + env(safe-area-inset-top,0px)) clamp(20px,4vw,56px) 0;pointer-events:none;transition:opacity .4s}
+h1{margin:0;font:italic 400 clamp(44px,9vw,120px)/.95 'Instrument Serif',Georgia,serif;letter-spacing:-.01em;transition:opacity .35s}
+.eq{margin-top:10px;font:500 clamp(12px,1.3vw,15px)/1.6 ui-monospace,Consolas,monospace;color:#9097b0;white-space:pre;transition:opacity .35s}
+.hint{margin-top:14px;font-size:clamp(14px,1.6vw,18px);color:#9097b0;transition:opacity 1s}
+</style>
+</head>
+<body data-title-en="Strange attractor">
+<canvas id="c"></canvas>
+<div class="ui">
+  <h1 id="name" data-en="Lorenz">Лоренц</h1>
+  <div class="eq" id="eq"></div>
+  <div class="hint" id="hint" data-en="Drag to rotate. Click to switch the system.">Тяните, чтобы вращать. Клик — следующая система.</div>
+</div>
+<script>
+(function(){
+// Each particle is a point in a chaotic 3D system integrated with RK4. Particles that start
+// almost together drift apart: that spread is the "sensitive dependence" in chaos theory.
+var SYS=[
+ {n:LAB.t('Лоренц','Lorenz'),dt:.005,gap:7,eq:"x' = 10(y − x)\ny' = x(28 − z) − y\nz' = xy − 8z/3",
+  f:function(x,y,z,o){o[0]=10*(y-x);o[1]=x*(28-z)-y;o[2]=x*y-8/3*z}},
+ {n:LAB.t('Айзава','Aizawa'),dt:.012,gap:7,eq:"x' = (z − 0.7)x − 3.5y\ny' = 3.5x + (z − 0.7)y\nz' = 0.6 + 0.95z − z³/3 − …",
+  f:function(x,y,z,o){o[0]=(z-.7)*x-3.5*y;o[1]=3.5*x+(z-.7)*y;o[2]=.6+.95*z-z*z*z/3-(x*x+y*y)*(1+.25*z)+.1*z*x*x*x}},
+ {n:LAB.t('Томас','Thomas'),dt:.06,gap:24,eq:"x' = sin y − 0.208x\ny' = sin z − 0.208y\nz' = sin x − 0.208z",
+  f:function(x,y,z,o){var b=.208186;o[0]=Math.sin(y)-b*x;o[1]=Math.sin(z)-b*y;o[2]=Math.sin(x)-b*z}},
+ {n:LAB.t('Хальворсен','Halvorsen'),dt:.006,gap:20,seed:[-1.48,-1.51,2.04],eq:"x' = −1.4x − 4y − 4z − y²\ny' = −1.4y − 4z − 4x − z²\nz' = −1.4z − 4x − 4y − x²",
+  f:function(x,y,z,o){var a=1.4;o[0]=-a*x-4*y-4*z-y*y;o[1]=-a*y-4*z-4*x-z*z;o[2]=-a*z-4*x-4*y-x*x}}
+];
+var cv=document.getElementById('c'),ctx=cv.getContext('2d'),W,H,D;
+function size(){D=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*D;cv.height=H*D;ctx.setTransform(D,0,0,D,0,0);ctx.fillStyle='#04050a';ctx.fillRect(0,0,W,H)}
+addEventListener('resize',size);size();
+var N=Math.min(4000,Math.round(innerWidth*innerHeight/450)),P=new Float64Array(N*3),S=new Float32Array(N),cur=0,sys,center=[0,0,0],scale=1;
+var k1=[0,0,0],k2=[0,0,0],k3=[0,0,0],k4=[0,0,0];
+function rk4(i){
+  var f=sys.f,h=sys.dt,x=P[i],y=P[i+1],z=P[i+2];
+  f(x,y,z,k1);f(x+k1[0]*h/2,y+k1[1]*h/2,z+k1[2]*h/2,k2);f(x+k2[0]*h/2,y+k2[1]*h/2,z+k2[2]*h/2,k3);f(x+k3[0]*h,y+k3[1]*h,z+k3[2]*h,k4);
+  P[i]=x+h/6*(k1[0]+2*k2[0]+2*k3[0]+k4[0]);P[i+1]=y+h/6*(k1[1]+2*k2[1]+2*k3[1]+k4[1]);P[i+2]=z+h/6*(k1[2]+2*k2[2]+2*k3[2]+k4[2]);
+  return Math.hypot(k1[0],k1[1],k1[2]);
+}
+function load(n){
+  sys=SYS[n];var nm=document.getElementById('name'),eq=document.getElementById('eq');
+  nm.style.opacity=eq.style.opacity=0;setTimeout(function(){nm.textContent=sys.n;eq.textContent=sys.eq;nm.style.opacity=eq.style.opacity=1},200);
+  // Warm one seed onto the attractor, then drop the particles one by one along its path,
+  // so the whole shape is filled from the first frame.
+  // The start must break the x = y = z symmetry: Thomas and Halvorsen have a fixed point on that line.
+  var sd=sys.seed||[.1,0,-.1];P[0]=sd[0];P[1]=sd[1];P[2]=sd[2];for(var s=0;s<3000;s++)rk4(0);
+  for(var i=N-1;i>=0;i--){for(var s=0;s<sys.gap;s++)rk4(0);P[i*3]=P[0];P[i*3+1]=P[1];P[i*3+2]=P[2]}
+  // Fit the camera: centre on the mean, scale by the 95th-percentile radius.
+  var c=[0,0,0];for(var i=0;i<N;i++){c[0]+=P[i*3];c[1]+=P[i*3+1];c[2]+=P[i*3+2]}center=c.map(function(v){return v/N});
+  var r=[];for(var i=0;i<N;i+=4)r.push(Math.hypot(P[i*3]-center[0],P[i*3+1]-center[1],P[i*3+2]-center[2]));r.sort(function(a,b){return a-b});
+  scale=1/(r[Math.floor(r.length*.95)]||1);
+  ctx.fillStyle='#04050a';ctx.fillRect(0,0,W,H);
+}
+var rot={y:.6,x:-.35,vy:.0025},drag=null,moved=false;
+cv.addEventListener('pointerdown',function(e){drag={x:e.clientX,y:e.clientY,ry:rot.y,rx:rot.x,moved:false};cv.setPointerCapture(e.pointerId);cv.style.cursor='grabbing'});
+cv.addEventListener('pointermove',function(e){if(!drag)return;var dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4)drag.moved=true;rot.y=drag.ry+dx*.006;rot.x=Math.max(-1.4,Math.min(1.4,drag.rx+dy*.006));if(!moved){moved=true;document.getElementById('hint').style.opacity=0}});
+cv.addEventListener('pointerup',function(){if(drag&&!drag.moved){cur=(cur+1)%SYS.length;load(cur)}drag=null;cv.style.cursor='grab'});
+var vmax=1;
+function frame(){
+  if(!drag)rot.y+=rot.vy;
+  // Rarely a particle escapes to infinity through numerical error; put it back on the attractor.
+  var hi=0;for(var i=0;i<N;i++){var v=rk4(i*3);if(!(v<1e6)){var j=Math.floor(Math.random()*N)*3;P[i*3]=P[j];P[i*3+1]=P[j+1];P[i*3+2]=P[j+2];v=0}S[i]=v;if(v>hi)hi=v}
+  vmax+=(hi*.9-vmax)*.05;
+  ctx.globalCompositeOperation='source-over';ctx.fillStyle='rgba(4,5,10,.2)';ctx.fillRect(0,0,W,H);
+  ctx.globalCompositeOperation='lighter';
+  var cy=Math.cos(rot.y),sy=Math.sin(rot.y),cx=Math.cos(rot.x),sx=Math.sin(rot.x),F=Math.min(W,H)*1.05,cam=3.2,ox=W*.56,oy=H*.54;
+  var cols=['rgba(129,140,248,.8)','rgba(124,245,208,.85)','rgba(244,114,182,.9)'];
+  for(var b=0;b<3;b++){
+    ctx.fillStyle=cols[b];ctx.beginPath();
+    for(var i=0;i<N;i++){var t=S[i]/vmax,bk=t<.45?0:t<.8?1:2;if(bk!==b)continue;
+      var X=(P[i*3]-center[0])*scale,Y=(P[i*3+1]-center[1])*scale,Z=(P[i*3+2]-center[2])*scale;
+      if(sys.n===SYS[0].n){var tmp=Y;Y=Z;Z=tmp} // Lorenz looks best with z up
+      var x1=X*cy+Z*sy,z1=-X*sy+Z*cy,y1=Y*cx-z1*sx,z2=Y*sx+z1*cx,p=F/(cam-z2);
+      if(!isFinite(p)||p<=0)continue;ctx.rect(ox+x1*p,oy-y1*p,1.6,1.6)}
+    ctx.fill();
+  }
+  requestAnimationFrame(frame);
+}
+load(0);requestAnimationFrame(frame);
+addEventListener('keydown',function(e){var k=e.key.toLowerCase();if(k==='h'||k==='р'){var u=document.querySelector('.ui');u.style.opacity=u.style.opacity==='0'?'1':'0'}if(k==='f'||k==='а'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}if(k===' '||k==='arrowright'){e.preventDefault();cur=(cur+1)%SYS.length;load(cur)}});
+})();
+</script>
+</body>
+</html>

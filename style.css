@@ -344,7 +344,53 @@ a.live-row:hover, a.live-row:focus-visible { background: rgba(255, 255, 255, 0.0
 @keyframes live-pulse { 50% { opacity: 0.35; } }
 @media (max-width: 1000px) { .live-list { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .live { padding: 16px; } .live-list { grid-template-columns: 1fr; } }
-@media (prefers-reduced-motion: reduce) { .live-summary::before, .live-row.running .live-dot { animation: none; } }
+.live-row { animation: live-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; animation-delay: calc(var(--i, 0) * 45ms); }
+@keyframes live-in { from { opacity: 0; transform: translateY(10px) scale(0.98); } }
+@media (prefers-reduced-motion: reduce) { .live-summary::before, .live-row.running .live-dot, .live-row { animation: none; } }
+
+.contact-tip { margin: 22px auto 0 !important; font-size: 14px; }
+
+/* ── Command palette (see src/palette.js) ────────────────────────────────── */
+.kbar { display: inline-flex; align-items: center; gap: 8px; margin-left: 4px; padding: 6px 8px 6px 10px; border: 1px solid var(--border); border-radius: 99px; background: rgba(255, 255, 255, 0.03); color: var(--muted); font: 500 12px var(--sans); cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+.kbar:hover, .kbar:focus-visible { color: var(--text); border-color: rgba(124, 245, 208, 0.45); }
+.kbar svg { width: 15px; height: 15px; fill: currentColor; }
+.kbar kbd { padding: 2px 6px; border: 1px solid var(--border); border-radius: 6px; font: 500 11px var(--mono); }
+@media (max-width: 920px) { .kbar { margin-left: auto; } .nav .lang { margin-left: 0; } }
+@media (max-width: 640px) { .kbar kbd { display: none; } }
+
+.palette { width: min(620px, calc(100vw - 32px)); max-height: min(560px, calc(100dvh - 120px)); margin: 12vh auto auto; padding: 0; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 18px; background: rgba(13, 15, 24, 0.92); color: var(--text); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(124, 245, 208, 0.06); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); overflow: hidden; }
+.palette[open] { display: flex; flex-direction: column; animation: pal-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.palette::backdrop { background: rgba(4, 5, 10, 0.55); backdrop-filter: blur(3px); }
+@keyframes pal-in { from { opacity: 0; transform: translateY(-8px) scale(0.98); } }
+.pal-box { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+.pal-input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--text); font: 500 17px var(--sans); }
+.pal-input::placeholder { color: #6b7394; }
+.pal-esc, .pal-keys { font: 500 11.5px var(--mono); color: #6b7394; }
+.pal-esc { padding: 2px 6px; border: 1px solid var(--border); border-radius: 6px; }
+.pal-list { flex: 1; margin: 0; padding: 6px; overflow-y: auto; list-style: none; }
+.pal-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; cursor: pointer; animation: live-in 0.3s backwards; animation-delay: calc(var(--i) * 18ms); }
+.pal-item[aria-selected='true'] { background: rgba(124, 245, 208, 0.1); box-shadow: inset 2px 0 0 var(--mint); }
+.pal-icon { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 8px; font: 500 12px var(--mono); color: var(--mint); }
+.pal-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
+.pal-kind { flex: none; font-size: 12px; color: var(--muted); }
+.pal-empty { padding: 26px 12px; text-align: center; color: var(--muted); }
+.pal-keys { margin: 0; padding: 10px 16px; border-top: 1px solid var(--border); }
+@media (max-width: 480px) { .palette { margin-top: 72px; } .pal-esc { display: none; } .pal-input { font-size: 16px; } .pal-keys { display: none; } }
+@media (prefers-reduced-motion: reduce) { .palette[open], .pal-item { animation: none; } }
+
+/* ── Delight (see src/delight.js) ────────────────────────────────────────── */
+.toast { position: fixed; z-index: 60; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); max-width: calc(100vw - 32px); padding: 12px 18px; border: 1px solid rgba(124, 245, 208, 0.35); border-radius: 14px; background: rgba(13, 15, 24, 0.94); color: var(--text); font-size: 15px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5); transform: translate(-50%, 140%); opacity: 0; transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s; pointer-events: none; }
+.toast.show { transform: translate(-50%, 0); opacity: 1; }
+.check { position: fixed; z-index: 61; color: var(--mint); font-weight: 700; pointer-events: none; text-shadow: 0 0 12px rgba(124, 245, 208, 0.7); animation: check-fly 1s cubic-bezier(0.15, 0.7, 0.3, 1) forwards; }
+@keyframes check-fly { from { transform: translate(-50%, -50%) scale(0.4); opacity: 1; } to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--r)) scale(1); opacity: 0; } }
+.facts.flash div { animation: fact-flash 1.4s ease-out; animation-delay: calc(var(--n, 0) * 90ms); }
+.facts div:nth-child(2) { --n: 1; } .facts div:nth-child(3) { --n: 2; } .facts div:nth-child(4) { --n: 3; }
+@keyframes fact-flash { 20% { border-color: var(--mint); box-shadow: 0 0 0 4px rgba(124, 245, 208, 0.15), 0 0 30px rgba(124, 245, 208, 0.2); transform: translateY(-3px); } }
+.js .case-steps li::after { background: linear-gradient(var(--mint), rgba(124, 245, 208, 0.12)); transform: scaleY(0); transform-origin: top; transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s; }
+.js .case-steps li.lit::after { transform: none; }
+.js .case-steps li::before { transition: box-shadow 0.5s, background 0.5s; }
+.js .case-steps li.lit::before { background: rgba(124, 245, 208, 0.2); box-shadow: 0 0 0 5px rgba(124, 245, 208, 0.08), 0 0 22px rgba(124, 245, 208, 0.35); }
+@media (prefers-reduced-motion: reduce) { .js .case-steps li::after { transform: none; transition: none; } .facts.flash div { animation: none; } }
 
 .footer {
   display: flex;
@@ -635,7 +681,7 @@ a.live-row:hover, a.live-row:focus-visible { background: rgba(255, 255, 255, 0.0
 .note-card:hover { transform: translateY(-4px); border-color: rgba(129, 140, 248, 0.35); }
 
 /* ── Lab ─────────────────────────────────────────────────────────────────── */
-.labs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.labs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .lab-card {
   --accent: var(--mint);
   position: relative;

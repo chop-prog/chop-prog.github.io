@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Стая · boids</title>
+<meta name="description" content="Flock: hundreds of boids following three local rules, scattering from the cursor and gathering where you hold it.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2307080d'/%3E%3Cpath d='M9 11l-4 5 4 5M23 11l4 5-4 5M18 8l-4 16' fill='none' stroke='%237cf5d0' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script src="../lab.js"></script>
+<style>
+:root{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;background:#05070d;color:#eceef6;font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+.ui{position:fixed;left:0;top:0;padding:calc(clamp(20px,4vw,48px) + env(safe-area-inset-top,0px)) clamp(20px,4vw,56px) 0;pointer-events:none;transition:opacity .4s}
+h1{margin:0;font-weight:700;font-size:clamp(40px,8vw,104px);line-height:.95;letter-spacing:-.04em}
+.hint{max-width:34ch;margin-top:14px;font-size:clamp(14px,1.6vw,18px);color:#9097b0;transition:opacity 1s}
+.hud{position:fixed;left:clamp(20px,4vw,56px);bottom:calc(20px + env(safe-area-inset-bottom,0px));font:500 12.5px ui-monospace,Consolas,monospace;color:#6b7394;pointer-events:none}
+</style>
+</head>
+<body data-title-en="Flock · boids">
+<canvas id="c"></canvas>
+<div class="ui">
+  <h1 data-en="Flock">Стая</h1>
+  <div class="hint" id="hint" data-en="Move the cursor and the flock scatters. Hold the button and it gathers around you.">Двигайте курсором — стая разлетается. Зажмите кнопку — соберётся вокруг вас.</div>
+</div>
+<div class="hud" id="hud"></div>
+<script>
+(function(){
+// Boids (Reynolds, 1987): each bird only sees neighbours within R and follows three rules,
+// separation, alignment and cohesion. Neighbours come from a uniform grid, so a frame is
+// about O(n) instead of O(n²).
+var cv=document.getElementById('c'),ctx=cv.getContext('2d'),W,H,D,N,R=46,SEP=16,MAXV=3.4,MINV=1.7;
+var x,y,vx,vy,cols,rows,head,next;
+function size(){
+  D=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*D;cv.height=H*D;ctx.setTransform(D,0,0,D,0,0);
+  N=Math.max(260,Math.min(1100,Math.round(W*H/1500)));
+  x=new Float32Array(N);y=new Float32Array(N);vx=new Float32Array(N);vy=new Float32Array(N);next=new Int32Array(N);
+  for(var i=0;i<N;i++){x[i]=Math.random()*W;y[i]=Math.random()*H;var a=Math.random()*6.283;vx[i]=Math.cos(a)*2;vy[i]=Math.sin(a)*2}
+  cols=Math.ceil(W/R);rows=Math.ceil(H/R);head=new Int32Array(cols*rows);
+  ctx.fillStyle='#05070d';ctx.fillRect(0,0,W,H);
+}
+addEventListener('resize',size);size();
+var m={x:-1e4,y:-1e4,down:false},last=0,moved=false;
+function pos(e){m.x=e.clientX;m.y=e.clientY;last=performance.now();if(!moved){moved=true;document.getElementById('hint').style.opacity=0}}
+cv.addEventListener('pointermove',pos);
+cv.addEventListener('pointerdown',function(e){pos(e);m.down=true;cv.setPointerCapture(e.pointerId)});
+addEventListener('pointerup',function(){m.down=false});
+cv.addEventListener('pointerleave',function(){if(!m.down){m.x=m.y=-1e4}});
+var hud=document.getElementById('hud'),fpsT=0,frames=0,checks=0;
+function step(t){
+  // When nobody is around, an invisible "hawk" circles the screen so the flock keeps moving.
+  var px=m.x,py=m.y;
+  if(performance.now()-last>4000&&!m.down){px=W/2+Math.cos(t*.0004)*W*.32;py=H/2+Math.sin(t*.00057)*H*.3}
+  head.fill(-1);
+  for(var i=0;i<N;i++){var c=Math.min(cols-1,Math.max(0,x[i]/R|0))+Math.min(rows-1,Math.max(0,y[i]/R|0))*cols;next[i]=head[c];head[c]=i}
+  checks=0;
+  for(var i=0;i<N;i++){
+    var cx=x[i]/R|0,cy=y[i]/R|0,ax=0,ay=0,sx=0,sy=0,mx=0,my=0,k=0;
+    for(var oy=-1;oy<=1;oy++){var ry=cy+oy;if(ry<0||ry>=rows)continue;
+      for(var ox=-1;ox<=1;ox++){var rx=cx+ox;if(rx<0||rx>=cols)continue;
+        for(var j=head[rx+ry*cols];j!==-1;j=next[j]){if(j===i)continue;checks++;
+          var dx=x[j]-x[i],dy=y[j]-y[i],d2=dx*dx+dy*dy;if(d2>R*R)continue;
+          ax+=vx[j];ay+=vy[j];mx+=x[j];my+=y[j];k++;
+          if(d2<SEP*SEP){var inv=1/(d2+1);sx-=dx*inv;sy-=dy*inv}}}}
+    var fx=sx*1.6,fy=sy*1.6;
+    if(k){fx+=(ax/k-vx[i])*.05+(mx/k-x[i])*.0009;fy+=(ay/k-vy[i])*.05+(my/k-y[i])*.0009}
+    var dx=x[i]-px,dy=y[i]-py,d2=dx*dx+dy*dy;
+    if(m.down){if(d2<260*260){var d=Math.sqrt(d2)+1;fx-=dx/d*.09*(1-d/260)+dy/d*.12;fy-=dy/d*.09*(1-d/260)-dx/d*.12}}
+    else if(d2<140*140){var d=Math.sqrt(d2)+1,f=(1-d/140)*1.1;fx+=dx/d*f;fy+=dy/d*f}
+    vx[i]+=fx;vy[i]+=fy;
+    var s=Math.hypot(vx[i],vy[i])||1,cl=s>MAXV?MAXV/s:s<MINV?MINV/s:1;vx[i]*=cl;vy[i]*=cl;
+    x[i]+=vx[i];y[i]+=vy[i];
+    if(x[i]<-10)x[i]+=W+20;else if(x[i]>W+10)x[i]-=W+20;
+    if(y[i]<-10)y[i]+=H+20;else if(y[i]>H+10)y[i]-=H+20;
+  }
+}
+var PAL=['#7cf5d0','#818cf8','#f472b6'];
+function frame(t){
+  step(t);
+  ctx.globalCompositeOperation='source-over';ctx.fillStyle='rgba(5,7,13,.28)';ctx.fillRect(0,0,W,H);
+  ctx.globalCompositeOperation='lighter';
+  // Colour by heading, in three buckets: one path per colour keeps it to three fill() calls,
+  // and birds flying together share a colour.
+  for(var b=0;b<3;b++){
+    ctx.fillStyle=PAL[b];ctx.globalAlpha=.85;ctx.beginPath();
+    for(var i=0;i<N;i++){var s=Math.hypot(vx[i],vy[i]),bk=Math.floor((Math.atan2(vy[i],vx[i])+Math.PI)/(2*Math.PI)*3)%3;if(bk!==b)continue;
+      var ux=vx[i]/s,uy=vy[i]/s,X=x[i],Y=y[i];
+      ctx.moveTo(X+ux*6,Y+uy*6);ctx.lineTo(X-ux*4-uy*2.6,Y-uy*4+ux*2.6);ctx.lineTo(X-ux*4+uy*2.6,Y-uy*4-ux*2.6);ctx.closePath()}
+    ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  frames++;if(t-fpsT>500){hud.textContent=N+LAB.t(' птиц · ',' birds · ')+Math.round(frames*1000/(t-fpsT))+' fps · '+Math.round(checks/N)+LAB.t(' соседей проверено на птицу',' neighbour checks per bird');fpsT=t;frames=0}
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+addEventListener('keydown',function(e){var k=e.key.toLowerCase();if(k==='h'||k==='р'){var u=document.querySelector('.ui');u.style.opacity=u.style.opacity==='0'?'1':'0'}if(k==='f'||k==='а'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}});
+})();
+</script>
+</body>
+</html>

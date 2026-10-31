@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>404 · chop-prog</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2307080d'/%3E%3Cpath d='M9 11l-4 5 4 5M23 11l4 5-4 5M18 8l-4 16' fill='none' stroke='%237cf5d0' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body { display: grid; place-items: center; padding: 24px 16px; background: radial-gradient(700px circle at 30% 20%, rgba(124, 245, 208, 0.09), transparent 60%), radial-gradient(700px circle at 70% 90%, rgba(244, 114, 182, 0.08), transparent 60%), #07080d; color: #eceef6; font: 17px/1.55 Inter, system-ui, -apple-system, 'Segoe UI', sans-serif; text-align: center; }
+    main { max-width: 560px; }
+    .code { margin: 0; font: 700 clamp(96px, 26vw, 200px)/1 ui-monospace, Consolas, monospace; letter-spacing: -0.06em; }
+    /* Each digit floats on its own, so each carries its own clipped gradient. */
+    .code span { display: inline-block; background: linear-gradient(90deg, #7cf5d0, #818cf8, #f472b6, #7cf5d0); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: hue 8s linear infinite, drift 3.2s ease-in-out infinite; }
+    .code span:nth-child(2) { animation-delay: -1.1s; }
+    .code span:nth-child(3) { animation-delay: -2.2s; }
+    h1 { margin: 12px 0 8px; font-size: clamp(22px, 4vw, 28px); letter-spacing: -0.02em; }
+    p { margin: 0 0 28px; color: #9097b0; }
+    pre { margin: 0 auto 28px; max-width: 100%; padding: 12px 16px; overflow-x: auto; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; background: rgba(5, 6, 10, 0.75); font: 500 13px/1.6 ui-monospace, Consolas, monospace; color: #c4c9db; text-align: left; }
+    .fail { color: #f87171; } .ok { color: #7cf5d0; }
+    a { display: inline-block; padding: 12px 22px; border-radius: 99px; background: #eceef6; color: #07080d; font-weight: 600; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
+    a:hover, a:focus-visible { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(124, 245, 208, 0.25); outline: none; }
+    @keyframes hue { to { background-position: 300% 0; } }
+    @keyframes drift { 50% { transform: translateY(-8px) rotate(-2deg); } }
+    @media (prefers-reduced-motion: reduce) { .code, .code span { animation: none; } }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="code" aria-hidden="true"><span>4</span><span>0</span><span>4</span></p>
+    <h1 data-ru="Этой страницы нет">This page doesn't exist</h1>
+    <p data-ru="Поэтому её и не покрыли тестами. Всё остальное на сайте покрыто.">Which is why it isn't covered by tests. Everything else on the site is.</p>
+<pre><span class="fail">✖</span> GET <span id="path">/</span>  →  404
+<span class="ok">✔</span> <span data-ru="остальные страницы на месте">every other page is where it should be</span></pre>
+    <a href="/" data-ru="На главную">Back to the portfolio</a>
+  </main>
+  <script>
+    document.getElementById('path').textContent = location.pathname;
+    var saved = null;
+    try { saved = localStorage.getItem('lang'); } catch (e) { /* storage blocked */ }
+    if (saved ? saved === 'ru' : /^(ru|uk|be|kk)\b/i.test(navigator.language || '')) {
+      document.documentElement.lang = 'ru';
+      document.title = '404 · chop-prog';
+      document.querySelectorAll('[data-ru]').forEach(function (el) { el.textContent = el.getAttribute('data-ru'); });
+    }
+  </script>
+</body>
+</html>
