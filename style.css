@@ -354,7 +354,7 @@ a.live-row:hover, a.live-row:focus-visible { background: rgba(255, 255, 255, 0.0
 .kbar { display: inline-flex; align-items: center; gap: 8px; margin-left: 4px; padding: 6px 8px 6px 10px; border: 1px solid var(--border); border-radius: 99px; background: rgba(255, 255, 255, 0.03); color: var(--muted); font: 500 12px var(--sans); cursor: pointer; transition: color 0.2s, border-color 0.2s; }
 .kbar:hover, .kbar:focus-visible { color: var(--text); border-color: rgba(124, 245, 208, 0.45); }
 .kbar svg { width: 15px; height: 15px; fill: currentColor; }
-.kbar kbd { padding: 2px 6px; border: 1px solid var(--border); border-radius: 6px; font: 500 11px var(--mono); }
+.kbar kbd { white-space: nowrap; padding: 2px 6px; border: 1px solid var(--border); border-radius: 6px; font: 500 11px var(--mono); }
 @media (max-width: 920px) { .kbar { margin-left: auto; } .nav .lang { margin-left: 0; } }
 @media (max-width: 640px) { .kbar kbd { display: none; } }
 

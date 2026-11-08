@@ -16,6 +16,9 @@
 | 06 | [**Facet UI**](https://github.com/chop-prog/facet): accessible React components with OKLCH theming | React · TypeScript · axe-core |
 | 07 | [**Aurora**](https://github.com/chop-prog/aurora): real-time GPU fluid simulation | WebGL2 · GLSL |
 | 08 | [**VOID PULSE**](https://github.com/chop-prog/void-pulse): twin-stick roguelite with a custom engine and online co-op | Canvas 2D · WebRTC · Web Audio · PWA |
+| 12 | [**AI administrator**](https://github.com/chop-prog/booking-bot/blob/main/bot/ai_admin.py): books clients through Claude tool use, with the rules in code | Python · Anthropic SDK |
+| 13 | [**Bug Hunt**](https://github.com/chop-prog/bug-hunt): a five-minute browser game for testers | JavaScript · node:test |
+| 14 | [**Site check**](https://github.com/chop-prog/site-check): a plain-language website report for business owners | Node.js · node:test |
 
 ## Lab
 
