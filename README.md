@@ -19,6 +19,8 @@
 | 12 | [**AI administrator**](https://github.com/chop-prog/booking-bot/blob/main/bot/ai_admin.py): books clients through Claude tool use, with the rules in code | Python · Anthropic SDK |
 | 13 | [**Bug Hunt**](https://github.com/chop-prog/bug-hunt): a five-minute browser game for testers | JavaScript · node:test |
 | 14 | [**Site check**](https://github.com/chop-prog/site-check): a plain-language website report for business owners | Node.js · node:test |
+| 15 | [**Stockroom**](https://github.com/chop-prog/stockroom): stock reservation API that cannot oversell | Java 21 · Spring Boot · JUnit 5 |
+| 16 | [**Ledger**](https://github.com/chop-prog/ledger): account transfers with idempotency keys and double entry | C# · ASP.NET Core · EF Core · xUnit |
 
 ## Lab
 

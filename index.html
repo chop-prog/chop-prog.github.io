@@ -58,10 +58,10 @@
         <a class="btn" href="https://github.com/chop-prog" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .8.1-.7.4-1.1.6-1.3-2.2-.3-4.6-1.1-4.6-5a3.9 3.9 0 0 1 1-2.7 3.6 3.6 0 0 1 .1-2.6s.8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6a3.9 3.9 0 0 1 1 2.7c0 3.9-2.3 4.7-4.6 5 .4.3.7.9.7 1.9V21c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/></svg><span data-i18n="hero.github">GitHub profile</span></a>
       </div>
       <dl class="stats reveal">
-        <div><dt data-count="14">14</dt><dd data-i18n="stats.projects">shipped projects</dd></div>
-        <div><dt data-count="347">347</dt><dd data-i18n="stats.tests">automated tests</dd></div>
+        <div><dt data-count="16">16</dt><dd data-i18n="stats.projects">shipped projects</dd></div>
+        <div><dt data-count="376">376</dt><dd data-i18n="stats.tests">automated tests</dd></div>
         <div><dt data-count="0">0</dt><dd data-i18n="stats.deps">runtime dependencies in the game and the simulation</dd></div>
-        <div><dt data-count="5">5</dt><dd data-i18n="stats.langs">languages: TS, JS, Python, SQL, GLSL</dd></div>
+        <div><dt data-count="7">7</dt><dd data-i18n="stats.langs">languages: TS, JS, Python, Java, C#, SQL, GLSL</dd></div>
       </dl>
     </section>
 
@@ -95,7 +95,7 @@
     <section id="projects" class="section">
       <header class="section-head reveal">
         <h2 data-i18n="projects.title">Selected work</h2>
-        <p data-i18n="projects.lead">Fourteen projects, each built from scratch with tests and CI. The four below show the most range: a realtime backend, a sync engine, an AI app and a data tool.</p>
+        <p data-i18n="projects.lead">Sixteen projects, each built from scratch with tests and CI. The four below show the most range: a realtime backend, a sync engine, an AI app and a data tool.</p>
       </header>
 
       <article class="project reveal" style="--accent:#ff8a5c">
@@ -324,6 +324,32 @@
             <a class="btn primary" href="https://github.com/chop-prog/site-check" target="_blank" rel="noopener" data-i18n="code">Source code</a>
           </div>
         </article>
+
+        <article class="mini wide reveal" style="--accent:#fbbf24">
+          <a class="shot" href="https://github.com/chop-prog/stockroom" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <img src="assets/stockroom.jpg" width="1440" height="900" alt="" loading="lazy" decoding="async">
+          </a>
+          <p class="tag"><span>15</span> <span data-i18n="stock.tag">Java · backend</span></p>
+          <h4 data-i18n="stock.name">Stockroom: stock reservation API</h4>
+          <p data-i18n="stock.desc">Clients reserve goods, unpaid reservations expire and return to stock, and nothing can be sold twice. The stock check and the update are one SQL statement, and confirm, release and expiry are conditional updates, so exactly one of them wins a race. A test fires 100 concurrent requests at the last 10 units.</p>
+          <p class="tech">Java 21 · Spring Boot · JPA · JUnit 5</p>
+          <div class="links">
+            <a class="btn primary" href="https://github.com/chop-prog/stockroom" target="_blank" rel="noopener" data-i18n="code">Source code</a>
+          </div>
+        </article>
+
+        <article class="mini wide reveal" style="--accent:#a78bfa">
+          <a class="shot" href="https://github.com/chop-prog/ledger" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <img src="assets/ledger.jpg" width="1440" height="900" alt="" loading="lazy" decoding="async">
+          </a>
+          <p class="tag"><span>16</span> <span data-i18n="ledger.tag">C# · backend</span></p>
+          <h4 data-i18n="ledger.name">Ledger: account transfers API</h4>
+          <p data-i18n="ledger.desc">An account can't be overdrawn, and retrying a request can't move the money twice: idempotency keys return the first result. Each transfer writes both sides of a double entry, so an account's entries always add up to its balance. Tests run 200 parallel transfers from an account that can afford 50.</p>
+          <p class="tech">C# · .NET 10 · ASP.NET Core · EF Core · xUnit</p>
+          <div class="links">
+            <a class="btn primary" href="https://github.com/chop-prog/ledger" target="_blank" rel="noopener" data-i18n="code">Source code</a>
+          </div>
+        </article>
       </div>
     </section>
 
@@ -510,7 +536,7 @@ prefixSum(counts);
         </div>
         <div class="skill-group reveal">
           <h3 data-i18n="skills.backend">Backend</h3>
-          <ul><li>Node.js</li><li>Hono</li><li>REST & RFC 7807</li><li>SQLite / SQL</li><li>Server-Sent Events</li><li>Zod</li><li>HMAC auth</li><li>Rate limiting</li><li>Docker</li></ul>
+          <ul><li>Node.js</li><li>Hono</li><li>REST & RFC 7807</li><li>SQLite / SQL</li><li>Server-Sent Events</li><li>Zod</li><li>HMAC auth</li><li>Rate limiting</li><li>Docker</li><li>Java & Spring Boot</li><li>C# & ASP.NET Core</li><li>JPA / EF Core</li></ul>
         </div>
         <div class="skill-group reveal">
           <h3 data-i18n="skills.data">Data & AI</h3>
@@ -526,7 +552,7 @@ prefixSum(counts);
         </div>
         <div class="skill-group reveal">
           <h3 data-i18n="skills.quality">Quality & delivery</h3>
-          <ul><li>Vitest & Testing Library</li><li>node:test</li><li>Randomised tests</li><li>axe-core</li><li>Puppeteer</li><li>GitHub Actions</li><li>GitHub Pages</li><li>PWA / Service Worker</li><li>Vite</li></ul>
+          <ul><li>Vitest & Testing Library</li><li>node:test</li><li>JUnit 5</li><li>xUnit</li><li>Randomised tests</li><li>axe-core</li><li>Puppeteer</li><li>GitHub Actions</li><li>GitHub Pages</li><li>PWA / Service Worker</li><li>Vite</li></ul>
         </div>
       </div>
     </section>

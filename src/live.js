@@ -6,7 +6,7 @@
 export const OWNER = 'chop-prog';
 export const REPOS = [
   'relay', 'tandem', 'cite', 'seismic', 'flowboard', 'facet',
-  'aurora', 'void-pulse', 'gto-judge-ai', 'job-radar', 'booking-bot', 'bug-hunt', 'site-check', 'chop-prog.github.io',
+  'aurora', 'void-pulse', 'gto-judge-ai', 'job-radar', 'booking-bot', 'bug-hunt', 'site-check', 'stockroom', 'ledger', 'chop-prog.github.io',
 ];
 const CACHE_KEY = 'live:v1';
 const CACHE_MS = 10 * 60 * 1000;
